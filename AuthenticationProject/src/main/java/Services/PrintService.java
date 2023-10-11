@@ -1,45 +1,71 @@
 package Services;
 
+import Model.Printer;
+import Services.IPrintService;
+import Shared.ConsoleColors;
+
 import java.io.Serializable;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
-public interface PrintService extends Serializable,Remote {
+public class PrintService implements IPrintService, Serializable {
 
-    /**
-     * Starts the print server
-     */
-    public void start();
-    /**
-     * Stops the print server
-     */
-    public void stop();
-    /**
-     * Stops the print server, clears the print queue and starts the print server again
-     */
-    public void restart();
-    /**
-     * Prints file 'filename' on the specified 'printer'
-     */
-    public void print(String filename, String printer);
-    /**
-     * Lists the print queue for a given printer on the user's display in lines of the form '< job number >< file name >'
-     */
-    public void queue(String printer);
-    /**
-     * Moves job to the top of the queue
-     */
-    public void topQueue(String printer, int job);
-    /**
-     * Prints status of printer on the user's display
-     */
-    public void status(String printer);
-    /**
-     * Prints the value of the parameter
-     */
-    public void readConfig(String parameter);
-    /**
-     * Sets the parameter on the print server to 'value'
-     */
-    public void setConfig(String parameter, String value);
+    private List<Printer> printers;
+
+    public  PrintService() {
+        printers = new ArrayList<>();
+        //Add printers
+        printers.add(new Printer("Printer #1"));
+        printers.add(new Printer("Printer #2"));
+        printers.add(new Printer("Printer #3"));
+    }
+
+
+    @Override
+    public void start() {
+        System.out.println(ConsoleColors.GREEN + "Print server started");
+    }
+
+    @Override
+    public void stop() {
+        System.out.println(ConsoleColors.RED + "Print server stopped");
+    }
+
+    @Override
+    public void restart() {
+        System.out.println(ConsoleColors.ORANGE + "Print server is restarting");
+    }
+
+    @Override
+    public void print(String filename, String printer) {
+        System.out.println(ConsoleColors.GREEN + "Printer "+printer+" starts printing file: "+filename);
+    }
+
+    @Override
+    public void queue(String printer) {
+
+    }
+
+    @Override
+    public void topQueue(String printer, int job) {
+
+    }
+
+    @Override
+    public void status(String printer) {
+
+    }
+
+    @Override
+    public void readConfig(String parameter) {
+
+    }
+
+    @Override
+    public void setConfig(String parameter, String value) {
+
+    }
 }
+
+
+

@@ -1,5 +1,6 @@
 package ServerApplication;
 
+import Services.PrintService;
 import Shared.ConsoleColors;
 
 import java.io.IOException;
@@ -11,12 +12,12 @@ public class Main {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         try {
 
-            Printer remotePrinterObject = new Printer();
+            PrintService remotePrintServiceObject = new PrintService();
             // Create the RMI registry on port 1099
             Registry registry = LocateRegistry.createRegistry(1099);
 
             // Bind the remote object with a name
-            registry.rebind("printerObject", remotePrinterObject);
+            registry.rebind("printerObject", remotePrintServiceObject);
 
             System.out.println(ConsoleColors.GREEN + "Server is ready.");
             while (true) {

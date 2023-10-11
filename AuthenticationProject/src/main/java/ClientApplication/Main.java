@@ -1,6 +1,6 @@
 package ClientApplication;
 
-import Services.PrintService;
+import Services.IPrintService;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -11,7 +11,7 @@ public class Main {
             // Get the reference to the RMI registry on localhost, port 1099
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
             // Look up the remote object by the name used during binding
-            PrintService printService = (PrintService) registry.lookup("printerObject");
+            IPrintService printService = (IPrintService) registry.lookup("printerObject");
             printService.print("test.txt","1");
         } catch (Exception e) {
             e.printStackTrace();

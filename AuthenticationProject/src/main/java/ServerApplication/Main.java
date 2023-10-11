@@ -1,5 +1,7 @@
 package ServerApplication;
 
+import Shared.ConsoleColors;
+
 import java.io.IOException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -16,7 +18,7 @@ public class Main {
             // Bind the remote object with a name
             registry.rebind("printerObject", remotePrinterObject);
 
-            System.out.println("Server is ready.");
+            System.out.println(ConsoleColors.GREEN + "Server is ready.");
             while (true) {
                 Thread.sleep(1000);
             }

@@ -1,4 +1,4 @@
-package Services;
+package ServerApplication.Services;
 
 import java.io.Serializable;
 import java.rmi.Remote;

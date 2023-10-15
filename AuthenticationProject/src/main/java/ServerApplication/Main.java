@@ -1,6 +1,6 @@
 package ServerApplication;
 
-import Services.PrintService;
+import ServerApplication.Services.PrintService;
 import Shared.ConsoleColors;
 
 import java.io.IOException;

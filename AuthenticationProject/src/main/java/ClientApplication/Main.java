@@ -1,6 +1,6 @@
 package ClientApplication;
 
-import Services.IPrintService;
+import ServerApplication.Services.IPrintService;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;

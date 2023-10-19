@@ -12,6 +12,7 @@ import java.util.Map;
 
 public class PrintService implements IPrintService, Serializable {
     //TODO: implement print out the jobs from the printer queues.
+    //TODO: consider logger or simple console print outs for each action
     private List<Printer> printers;
     private Map<String, String> configurations;
 

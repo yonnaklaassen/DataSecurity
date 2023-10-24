@@ -7,5 +7,5 @@ import java.sql.SQLException;
 
 public interface IAuthenticationService extends Serializable, Remote {
 
-    boolean authenticate(String username, String password) throws RemoteException, SQLException;
+    String authenticate(String username, String password) throws RemoteException, SQLException;
 }

@@ -18,25 +18,18 @@ import java.sql.SQLException;
 public class ServerAuthentication implements AuthenticationProvider {
     @Autowired
     RemoteObjectHandler remoteObjectHandler;
+    @Autowired
+    UsersConfig userDetails;
 
 
+    @lombok.SneakyThrows
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
-        boolean authStatus=false;
-        try {
-            if (isAuthenticationValid(username, password)) {
+        boolean authStatus=isAuthenticationValid(username,password);
 
-                authStatus=true;
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
         if (authStatus) {
-
-            UserDetails userDetails = new UsersConfig(username,"1");
 
             return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
         } else {
@@ -51,8 +44,14 @@ public class ServerAuthentication implements AuthenticationProvider {
     }
 
     private boolean isAuthenticationValid(String username, String password) throws MalformedURLException, NotBoundException, RemoteException, SQLException {
+        String authStatus= remoteObjectHandler.getRemoteAuthenticationObject().authenticate(username,password);
+        if(authStatus!="false"){
 
-        return remoteObjectHandler.getRemoteAuthenticationObject().authenticate(username,password);
+            userDetails.set_sessionAuthCookie(authStatus);
+            return true;
+        }
+        return false;
+
     }
 
 

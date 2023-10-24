@@ -1,7 +1,9 @@
 package datasecurity.communication;
 
+import datasecurity.ClientSecurity.UsersConfig;
 import datasecurity.services.IAuthenticationService;
 import datasecurity.services.IPrintService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
@@ -13,31 +15,51 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMIClientSocketFactory;
+import java.sql.SQLException;
+
 
 @Component
 public class RemoteObjectHandler {
     Registry registry;
+    IAuthenticationService authenticationService;
+    IPrintService printService ;
 
-    public RemoteObjectHandler() throws RemoteException {
+    @Autowired
+    UsersConfig userDetails;
+
+    public RemoteObjectHandler( ) throws RemoteException, NotBoundException {
         System.setProperty("javax.net.ssl.trustStore", "certificate/certificate.pfx");
         System.setProperty("javax.net.ssl.trustStorePassword", "group10");
         RMIClientSocketFactory clientFactory = new SslRMIClientSocketFactory();
-         this.registry = LocateRegistry.getRegistry("localhost", 1099, clientFactory);
-
+        registry = LocateRegistry.getRegistry("localhost", 1099, clientFactory);
+        authenticationService =(IAuthenticationService) registry.lookup("authenticationObject");
     }
 
     public IAuthenticationService getRemoteAuthenticationObject() throws MalformedURLException, NotBoundException, RemoteException {
-       IAuthenticationService authenticationService =(IAuthenticationService) registry.lookup("authenticationObject");
-        System.out.println(authenticationService.getClass());
 
-
-        return (IAuthenticationService) registry.lookup("authenticationObject");
+        return authenticationService;
 
     }
     public IPrintService getRemotePrintServiceObject() throws MalformedURLException, NotBoundException, RemoteException {
+        printService= (IPrintService)registry.lookup("printServiceObject"+userDetails.get_sessionAuthCookie());
 
-        return (IPrintService)registry.lookup("printServiceObject");
+        return printService;
 
     }
 
+
+  /*  public static void main(String[] args) throws RemoteException, NotBoundException, SQLException {
+        System.setProperty("javax.net.ssl.trustStore", "certificate/certificate.pfx");
+        System.setProperty("javax.net.ssl.trustStorePassword", "group10");
+        RMIClientSocketFactory clientFactory = new SslRMIClientSocketFactory();
+        Registry registry = LocateRegistry.getRegistry("localhost", 1099, clientFactory);
+        IAuthenticationService authenticationService =(IAuthenticationService) registry.lookup("authenticationObject");
+        String test = authenticationService.authenticate("alice23","helloworld");
+        System.out.println(test);
+        IPrintService printService =  (IPrintService) registry.lookup("printServiceObject"+test);
+        printService.start();
+
+
+    }
+*/
 }

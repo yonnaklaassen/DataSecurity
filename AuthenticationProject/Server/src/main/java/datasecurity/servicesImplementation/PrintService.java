@@ -8,6 +8,7 @@ import datasecurity.model.PrintJob;
 import datasecurity.model.Printer;
 import datasecurity.services.IPrintService;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -22,9 +23,11 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     private Map<String, String> configurations;
     private String log;
     private int printJobCount;
+    String remoteObjectLocalReference;
 
-    public  PrintService() throws RemoteException {
+    public  PrintService(String refCookie) throws RemoteException {
         super();
+        this.remoteObjectLocalReference=refCookie;
         log="";
         printers = new ArrayList<>();
         configurations = new HashMap<>();
@@ -38,14 +41,18 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     }
 
     @Override
-    public void start() {
+    public void start() throws Exception{
+        validateSession();
+        System.out.println("hello"+this.remoteObjectLocalReference);
+        System.out.println("hello2"+Session.getSession(this.remoteObjectLocalReference).username);
         log="Print server started\n";
         System.out.println(ConsoleColors.GREEN + "Print server started");
         setAllPrinterStatus(Printer.Status.ON);
     }
 
     @Override
-    public void stop() {
+    public void stop() throws Exception {
+        validateSession();
         System.out.println(ConsoleColors.RED + "Print server stopped");
         setAllPrinterStatus(Printer.Status.OFF);
         log+="Print server stopped\n";
@@ -53,7 +60,8 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
 
 
     @Override
-    public void restart() {
+    public void restart() throws Exception {
+        validateSession();
         log = "Print server restarted";
         System.out.println(ConsoleColors.ORANGE + "Print server is restarting");
         stop();
@@ -66,7 +74,8 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     }
 
     @Override
-    public void print(String filename, String printer) {
+    public void print(String filename, String printer) throws Exception {
+        validateSession();
         printJobCount++;
         Printer p = findPrinter(printer);
         if(p != null)
@@ -77,18 +86,10 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
         System.out.println(ConsoleColors.GREEN +printer+" starts printing file: "+filename);
     }
 
-    public static void main(String[] args) throws RemoteException {
 
-        PrintService printService = new PrintService();
-       // printService.status("printer #1");
-       // printService.print("test","printer #1");
-       // printService.status("printer #1");
-       // printService.queue("printer #1");
-
-        System.out.println(printService.log);
-    }
     @Override
-    public void queue(String printer) {
+    public void queue(String printer) throws Exception {
+        validateSession();
         Printer p = findPrinter(printer);
         if(p != null){
             log += "Queue for "+printer+":\n"+ p.getQueue();
@@ -98,7 +99,8 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     }
 
     @Override
-    public void topQueue(String printer, int job) {
+    public void topQueue(String printer, int job)throws Exception {
+        validateSession();
         Printer p = findPrinter(printer);
         if(p != null)
             log += "Job: <"+ job + "> is on the top of the queue for printer :"+printer+"\n";
@@ -106,7 +108,8 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     }
 
     @Override
-    public void status(String printer) {
+    public void status(String printer) throws Exception {
+        validateSession();
         Printer p = findPrinter(printer);
         if(p != null){
             log += "The status of " + printer + " is: " + p.getStatus()+"\n";
@@ -114,13 +117,15 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     }
 
     @Override
-    public void readConfig(String parameter) {
+    public void readConfig(String parameter) throws Exception{
+        validateSession();
         log += "Configuration for Parameter: " +parameter + ", Value: " + configurations.get(parameter)+"\n";
         System.out.println(ConsoleColors.GREEN + "Parameter: " +parameter + ", Value: " + configurations.get(parameter));
     }
 
     @Override
-    public void setConfig(String parameter, String value) {
+    public void setConfig(String parameter, String value) throws Exception {
+        validateSession();
         log += "Parameter: "+parameter+", Value: "+value+"\n";
 
         configurations.put(parameter, value);
@@ -147,6 +152,17 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
         }
     }
 
+    private void validateSession() throws Exception {
+        Session session=Session.getSession(this.remoteObjectLocalReference);
+        //System.out.println("mmmmm"+session.activationTime);
+        if (session.isTimedOut()){
+           RegistryBinder.unBindPrintService(this.remoteObjectLocalReference);
+            System.out.println("Session is timed out");
+           throw new Exception("The session is timed out, please log-in again");
+        }else {
+            session.prolongSession();
+        }
+    }
     public Map<String, String> getConfigurations() {
         return configurations;
     }

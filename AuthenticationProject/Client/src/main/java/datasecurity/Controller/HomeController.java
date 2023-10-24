@@ -100,34 +100,34 @@ public HomeController(Server _server, RemoteObjectHandler _rmh){
     }
 
     @RequestMapping("/queue")
-    public ResponseEntity<String> queue( @RequestParam("printer") String printer) throws MalformedURLException, NotBoundException, RemoteException {
+    public ResponseEntity<String> queue( @RequestParam("printer") String printer) throws Exception {
         rmh.getRemotePrintServiceObject().queue(printer);
         return ResponseEntity.ok(rmh.getRemotePrintServiceObject().getPrintLog());
 
     }
     @RequestMapping("/topQueue")
-    public ResponseEntity<String> topQueue( @RequestParam("printer") String printer, @RequestParam("job") int job) throws MalformedURLException, NotBoundException, RemoteException {
+    public ResponseEntity<String> topQueue( @RequestParam("printer") String printer, @RequestParam("job") int job) throws Exception {
         rmh.getRemotePrintServiceObject().topQueue(printer,job);
         return ResponseEntity.ok(rmh.getRemotePrintServiceObject().getPrintLog());
 
     }
 
     @RequestMapping("/status")
-    public ResponseEntity<String> status( @RequestParam("printer") String printer) throws MalformedURLException, NotBoundException, RemoteException {
+    public ResponseEntity<String> status( @RequestParam("printer") String printer) throws Exception {
         rmh.getRemotePrintServiceObject().status(printer);
         return ResponseEntity.ok(rmh.getRemotePrintServiceObject().getPrintLog());
 
     }
 
     @RequestMapping("/setConf")
-    public ResponseEntity<String> setConf( @RequestParam("parameter") String parameter, @RequestParam("value") String value) throws MalformedURLException, NotBoundException, RemoteException {
+    public ResponseEntity<String> setConf( @RequestParam("parameter") String parameter, @RequestParam("value") String value) throws Exception {
         rmh.getRemotePrintServiceObject().setConfig(parameter,value);
         return ResponseEntity.ok(rmh.getRemotePrintServiceObject().getPrintLog());
 
     }
 
     @RequestMapping("/getConf")
-    public ResponseEntity<String> getConf( @RequestParam("parameter") String parameter) throws MalformedURLException, NotBoundException, RemoteException {
+    public ResponseEntity<String> getConf( @RequestParam("parameter") String parameter) throws Exception {
         rmh.getRemotePrintServiceObject().readConfig(parameter);
         return ResponseEntity.ok(rmh.getRemotePrintServiceObject().getPrintLog());
 

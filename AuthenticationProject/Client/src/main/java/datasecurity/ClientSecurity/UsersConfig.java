@@ -2,25 +2,24 @@ package datasecurity.ClientSecurity;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 
+@Component
 public class UsersConfig implements UserDetails {
 
     String _username;
-    String _sessionID;
+    String cookie;
 
-    public UsersConfig(String username,String sessionID){
-        _username=username;
-        _sessionID=sessionID;
+
+
+    public String get_sessionAuthCookie(){
+        return cookie;
     }
 
-    public String get_sessionID(){
-        return _sessionID;
-    }
-
-    public void set_sessionID(String sessionID){
-        _sessionID=sessionID;
+    public void set_sessionAuthCookie(String co){
+        cookie=co;
     }
 
 

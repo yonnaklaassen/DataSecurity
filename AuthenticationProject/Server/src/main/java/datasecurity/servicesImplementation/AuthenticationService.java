@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.Base64;
+import java.util.Random;
 
 public class AuthenticationService extends UnicastRemoteObject implements IAuthenticationService, Serializable {
     int identifier;
@@ -22,7 +23,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
     //TODO: implement password storage (System File, Public File, DBMS)
     //TODO: password verification DONE
     @Override
-    public boolean authenticate(String username, String password) throws RemoteException, SQLException {
+    public String authenticate(String username, String password) throws RemoteException, SQLException {
 
         //use secure KDF-based password hash - argon2id hybrid between 2d and ai
         //{salt+KDF(password,salt)} - Keep different random salt for each encrypted password+the key derived by KDF
@@ -52,12 +53,14 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
 
         if(generateHash(password, hashedPasswordSalt).matches(hashedPassword)){
             //user authenticated
-
-            return true;
+            String cookie= String.valueOf(new Random().ints(12));
+            Session session= new Session(username,cookie);
+            RegistryBinder.bindPrintService(cookie);
+            return cookie;
         }
 
         //user not authenticated
-        return false;
+        return "false";
     }
 
     public static String generateHash(String password, String salt){

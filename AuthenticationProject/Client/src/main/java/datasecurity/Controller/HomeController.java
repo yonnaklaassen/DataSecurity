@@ -19,14 +19,12 @@ public class HomeController {
 
 private Server server;
 private RemoteObjectHandler rmh;
-private String authURl;
-private  String printServiceUrl;
+
 
 @Autowired
 public HomeController(Server _server, RemoteObjectHandler _rmh){
     server=_server;
     rmh=_rmh;
-
 
 }
 

@@ -24,10 +24,10 @@ public class ServerAuthentication implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
-        System.out.println("Authhhhh");
         boolean authStatus=false;
         try {
             if (isAuthenticationValid(username, password)) {
+
                 authStatus=true;
             }
 
@@ -35,6 +35,7 @@ public class ServerAuthentication implements AuthenticationProvider {
             e.printStackTrace();
         }
         if (authStatus) {
+
             UserDetails userDetails = new UsersConfig(username,"1");
 
             return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());

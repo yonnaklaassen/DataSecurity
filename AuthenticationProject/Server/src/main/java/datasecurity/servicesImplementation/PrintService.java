@@ -1,4 +1,4 @@
-package datasecurity.services;
+package datasecurity.servicesImplementation;
 
 
 
@@ -6,6 +6,7 @@ package datasecurity.services;
 import datasecurity.Shared.ConsoleColors;
 import datasecurity.model.PrintJob;
 import datasecurity.model.Printer;
+import datasecurity.services.IPrintService;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

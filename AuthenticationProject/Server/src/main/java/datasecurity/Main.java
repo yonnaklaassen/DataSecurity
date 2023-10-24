@@ -2,9 +2,9 @@ package datasecurity;
 
 
 import datasecurity.Shared.ConsoleColors;
-import datasecurity.services.AuthenticationService;
+import datasecurity.servicesImplementation.AuthenticationService;
 import datasecurity.services.IAuthenticationService;
-import datasecurity.services.PrintService;
+import datasecurity.servicesImplementation.PrintService;
 
 import javax.rmi.ssl.SslRMIServerSocketFactory;
 import java.io.IOException;

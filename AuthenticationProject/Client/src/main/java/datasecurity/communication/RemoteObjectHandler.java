@@ -27,6 +27,9 @@ public class RemoteObjectHandler {
     }
 
     public IAuthenticationService getRemoteAuthenticationObject() throws MalformedURLException, NotBoundException, RemoteException {
+       IAuthenticationService authenticationService =(IAuthenticationService) registry.lookup("authenticationObject");
+        System.out.println(authenticationService.getClass());
+
 
         return (IAuthenticationService) registry.lookup("authenticationObject");
 

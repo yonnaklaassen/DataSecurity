@@ -1,7 +1,8 @@
-package datasecurity.services;
+package datasecurity.servicesImplementation;
 
 
 import datasecurity.Persistence.DataBaseConnection;
+import datasecurity.services.IAuthenticationService;
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
 import org.bouncycastle.crypto.params.Argon2Parameters;
 
@@ -13,6 +14,7 @@ import java.sql.SQLException;
 import java.util.Base64;
 
 public class AuthenticationService extends UnicastRemoteObject implements IAuthenticationService, Serializable {
+    int identifier;
     public AuthenticationService() throws RemoteException {
         super();
     }
@@ -50,6 +52,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
 
         if(generateHash(password, hashedPasswordSalt).matches(hashedPassword)){
             //user authenticated
+
             return true;
         }
 

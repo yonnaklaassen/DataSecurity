@@ -1,7 +1,8 @@
 package datasecurity.mocks;
 
-import datasecurity.services.IAuthenticationService;
-import lombok.SneakyThrows;
+import datasecurity.services.MockServiceForTest;
+import org.junit.jupiter.api.function.Executable;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.stereotype.Component;
 
 import javax.rmi.ssl.SslRMIServerSocketFactory;
@@ -12,10 +13,12 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
-
+@SpringBootTest
 @Component
 public class MockServer implements Serializable {
-    Registry registry;
+
+  static  Registry registry;
+
 
     public void bindRemoteObject(Remote remoteInterFace, String objectName) throws RemoteException {
 
@@ -23,44 +26,63 @@ public class MockServer implements Serializable {
     }
 
 
-    public void initialize_With_SSL(int port)  {
+    public void initialize_With_SSL(int port) throws RemoteException {
+        System.setProperty("javax.net.ssl.keyStorePassword", "group10");
+        System.setProperty("javax.net.ssl.keyStore", "SSL_Test_files/keyStoreForTest.pfx");
         MockServerSim m = new MockServerSim();
         Thread t = new Thread(m);
-       try {
+        t.start();
+        try {
+            registry = LocateRegistry.createRegistry(port, null, new SslRMIServerSocketFactory());
 
-
-           System.setProperty("javax.net.ssl.keyStorePassword", "group10");
-
-           System.setProperty("javax.net.ssl.keyStore", "keyStoreForTest.pfx");
-
-           registry = LocateRegistry.createRegistry(1099, null, new SslRMIServerSocketFactory());
-           t.start();
        }catch (Exception e){
-           System.out.println("Exception fired");
            e.printStackTrace();
            t.interrupt();
-
        }
+
     }
 
 
+
     public void initialize_Without_SSL(int port) throws RemoteException {
-         registry = LocateRegistry.createRegistry(port);
-
-
+        registry =  LocateRegistry.createRegistry(port);
         MockServerSim m = new MockServerSim();
         Thread t = new Thread(m);
         t.start();
     }
 
-    public void initializeReg() {
 
-        registry=null;
+    public void restart() throws RemoteException {
+        if (registry!=null) {
+            UnicastRemoteObject.unexportObject(registry, true);
+            System.out.println("Server restarted");
+        }
+
     }
 
-    public class MockServerSim implements Runnable {
 
-        @SneakyThrows
+    public static class MockServiceImplementation extends UnicastRemoteObject implements MockServiceForTest,Serializable {
+
+
+        public MockServiceImplementation() throws RemoteException {
+            super();
+        }
+
+        @Override
+        public String testMethod(String testParameter) throws RemoteException, SQLException {
+            System.out.println("Method invoked");
+
+            return "Method invoked";
+        }
+    }
+
+
+
+
+    @Component
+    public static class MockServerSim implements Runnable {
+
+
         @Override
         public void run() {
             boolean active = true;
@@ -72,25 +94,13 @@ public class MockServer implements Serializable {
                     active = false;
                     System.out.println("Server is stopped");
                 }
-                Thread.sleep(1000);
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
             }
-        }
-
-    }
-
-
-    public class MockServiceImplemntation extends UnicastRemoteObject implements IAuthenticationService {
-
-
-        public MockServiceImplemntation() throws RemoteException {
-            super();
-        }
-
-        @Override
-        public String authenticate(String username, String password) throws RemoteException, SQLException {
-
-            return null;
         }
     }
 }

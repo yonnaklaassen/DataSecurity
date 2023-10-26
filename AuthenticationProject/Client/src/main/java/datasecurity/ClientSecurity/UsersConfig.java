@@ -22,7 +22,6 @@ public class UsersConfig implements UserDetails {
         cookie=co;
     }
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

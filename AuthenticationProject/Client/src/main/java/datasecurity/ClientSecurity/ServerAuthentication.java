@@ -22,12 +22,18 @@ public class ServerAuthentication implements AuthenticationProvider {
     UsersConfig userDetails;
 
 
-    @lombok.SneakyThrows
+    //@lombok.SneakyThrows
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
-        boolean authStatus=isAuthenticationValid(username,password);
+        boolean authStatus=false;
+        try {
+            authStatus=isAuthenticationValid(username,password);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
 
         if (authStatus) {
 

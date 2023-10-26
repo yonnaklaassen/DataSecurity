@@ -17,6 +17,7 @@ import java.rmi.server.RMIServerSocketFactory;
 
 public class Main {
 
+
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         try {
             RegistryBinder registryBinder = new RegistryBinder();

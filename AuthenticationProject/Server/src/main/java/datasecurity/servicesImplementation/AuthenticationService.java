@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Random;
@@ -23,7 +25,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
     //TODO: implement password storage (System File, Public File, DBMS)
     //TODO: password verification DONE
     @Override
-    public String authenticate(String username, String password) throws RemoteException, SQLException {
+    public String authenticate(String username, String password) throws RemoteException, SQLException, NoSuchAlgorithmException {
 
         //use secure KDF-based password hash - argon2id hybrid between 2d and ai
         //{salt+KDF(password,salt)} - Keep different random salt for each encrypted password+the key derived by KDF
@@ -44,24 +46,30 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
 
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
 
-        String[] HashedPasswordSalt = dataBaseConnection.getHashedPasswordSalt(username);
-        String hashedPassword = HashedPasswordSalt[1];
-        String hashedPasswordSalt = HashedPasswordSalt[0];
-        System.out.println("hashedPassword"+hashedPassword);
-        System.out.println("hashedPasswordSalt"+hashedPasswordSalt);
-        System.out.println("generatedHash"+generateHash(password, hashedPasswordSalt));
+        String[] HashedPasswordAndSalt = dataBaseConnection.getHashedPasswordSalt(username);
+        String hashedPassword = HashedPasswordAndSalt[1];
+        String salt = HashedPasswordAndSalt[0];
+        System.out.println("Start authenticating User:"+" "+username);
+        //System.out.println("hashedPassword"+hashedPassword);
+        //System.out.println("hashedPasswordSalt"+salt);
+        //System.out.println("generatedHash"+generateHash(password, salt));
 
-        if(generateHash(password, hashedPasswordSalt).matches(hashedPassword)){
+        if(generateHash(password, salt).matches(hashedPassword)){
             //user authenticated
-            String cookie= String.valueOf(new Random().ints(12));
-            Session session= new Session(username,cookie);
-            RegistryBinder.bindPrintService(cookie);
-            return cookie;
+            SecureRandom secureRandom =SecureRandom.getInstance("SHA1PRNG");
+            String cookie= String.valueOf(secureRandom.nextInt());
+            String encryptedCookie= generateHash(cookie,salt);
+            Session session= new Session(username,encryptedCookie);
+            RegistryBinder.bindPrintService(encryptedCookie);
+            return encryptedCookie;
         }
 
         //user not authenticated
+        System.out.println("User :"+username+" is not authenticated");
         return "false";
     }
+
+
 
     public static String generateHash(String password, String salt){
 

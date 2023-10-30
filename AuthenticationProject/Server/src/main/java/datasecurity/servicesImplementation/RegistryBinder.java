@@ -15,10 +15,10 @@ public class RegistryBinder {
 
     static {
         try {
+            System.setProperty("javax.net.ssl.keyStore", "certificate/RMI_ServerKeyStore.pfx");
             System.setProperty("javax.net.ssl.keyStorePassword", "group10");
-            System.setProperty("javax.net.ssl.keyStore", "certificate/certificate.pfx");
 
-            registry = LocateRegistry.createRegistry(1099, null, new SslRMIServerSocketFactory());
+            registry = LocateRegistry.createRegistry(1099,null,new SslRMIServerSocketFactory());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -28,17 +28,21 @@ public class RegistryBinder {
     public static void bindAuthenticationService() throws RemoteException {
         IAuthenticationService remoteAuthenticationServiceObject = new AuthenticationService();
         registry.rebind("authenticationObject", remoteAuthenticationServiceObject);
+        System.out.println("Authentication service is started. You can access it using a JRMP-TLS channel on port 1099\n");
+
     }
 
     public static void bindPrintService(String referenceCookie) throws RemoteException {
         PrintService remotePrintServiceObject = new PrintService(referenceCookie);
         registry.rebind("printServiceObject"+referenceCookie, remotePrintServiceObject);
+        System.out.println("Print service is ready to use.");
 
     }
 
 
     public static void unBindPrintService(String referenceCookie) throws NotBoundException, RemoteException {
         registry.unbind("printServiceObject"+referenceCookie);
+        System.out.println("print service is stopped");
     }
 
 }

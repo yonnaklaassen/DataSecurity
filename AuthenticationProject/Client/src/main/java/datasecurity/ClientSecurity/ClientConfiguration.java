@@ -1,6 +1,7 @@
 package datasecurity.ClientSecurity;
 
 
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -17,9 +18,12 @@ public class ClientConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
     http.requiresChannel().anyRequest().requiresSecure();
         http.csrf().disable();
-        http
+        http.sessionManagement()
+                .invalidSessionUrl(null)
+                .and()
                 .authorizeRequests()
                 .antMatchers("/**").authenticated()
                 .and()

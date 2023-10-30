@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
 
@@ -49,11 +50,12 @@ public class ServerAuthentication implements AuthenticationProvider {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
-    private boolean isAuthenticationValid(String username, String password) throws MalformedURLException, NotBoundException, RemoteException, SQLException {
+    private boolean isAuthenticationValid(String username, String password) throws MalformedURLException, NotBoundException, RemoteException, SQLException, NoSuchAlgorithmException {
         String authStatus= remoteObjectHandler.getRemoteAuthenticationObject().authenticate(username,password);
-        if(authStatus!="false"){
-
+        if(!authStatus.equals("false")){
             userDetails.set_sessionAuthCookie(authStatus);
+            userDetails.seUsername(username);
+            userDetails._isActiveSession=true;
             return true;
         }
         return false;

@@ -11,7 +11,7 @@ public class UsersConfig implements UserDetails {
 
     String _username;
     String cookie;
-
+    boolean _isActiveSession;
 
 
     public String get_sessionAuthCookie(){
@@ -56,4 +56,18 @@ public class UsersConfig implements UserDetails {
     public boolean isEnabled() {
         return false;
     }
+
+    public void seUsername(String s) {
+        _username=s;
+    }
+
+    public boolean activeSession() {
+
+        return this._isActiveSession;
+    }
+
+    public boolean sessionStutus(){
+        return this._isActiveSession;
+    }
+
 }

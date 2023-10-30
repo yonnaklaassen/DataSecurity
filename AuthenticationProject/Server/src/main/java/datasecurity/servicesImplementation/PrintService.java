@@ -43,17 +43,15 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     @Override
     public void start() throws Exception{
         validateSession();
-        System.out.println("hello"+this.remoteObjectLocalReference);
-        System.out.println("hello2"+Session.getSession(this.remoteObjectLocalReference).username);
         log="Print server started\n";
-        System.out.println(ConsoleColors.GREEN + "Print server started");
+        System.out.println(ConsoleColors.GREEN + "Print server started by user :" + Session.getSession(this.remoteObjectLocalReference).username );
         setAllPrinterStatus(Printer.Status.ON);
     }
 
     @Override
     public void stop() throws Exception {
         validateSession();
-        System.out.println(ConsoleColors.RED + "Print server stopped");
+        System.out.println(ConsoleColors.RED + "Print server stopped by user :" + Session.getSession(this.remoteObjectLocalReference).username);
         setAllPrinterStatus(Printer.Status.OFF);
         log+="Print server stopped\n";
     }
@@ -63,7 +61,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     public void restart() throws Exception {
         validateSession();
         log = "Print server restarted";
-        System.out.println(ConsoleColors.ORANGE + "Print server is restarting");
+        System.out.println(ConsoleColors.ORANGE + "Print server is restarting  by user :" + Session.getSession(this.remoteObjectLocalReference).username);
         stop();
         setAllPrinterStatus(Printer.Status.RESTARTING);
         for (Printer printer : printers) {
@@ -83,7 +81,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
             p.addToQueue(new PrintJob(printJobCount, filename));
 
         log += printer+" starts printing file: "+filename+"\n";
-        System.out.println(ConsoleColors.GREEN +printer+" starts printing file: "+filename);
+        System.out.println(ConsoleColors.GREEN +printer+" starts printing file: "+filename +" by user :" + Session.getSession(this.remoteObjectLocalReference).username);
     }
 
 
@@ -93,7 +91,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
         Printer p = findPrinter(printer);
         if(p != null){
             log += "Queue for "+printer+":\n"+ p.getQueue();
-            System.out.println(ConsoleColors.GREEN + p.getQueue());
+           // System.out.println(ConsoleColors.GREEN + p.getQueue());
         }
 
     }
@@ -102,9 +100,11 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     public void topQueue(String printer, int job)throws Exception {
         validateSession();
         Printer p = findPrinter(printer);
-        if(p != null)
+        if(p != null){
             log += "Job: <"+ job + "> is on the top of the queue for printer :"+printer+"\n";
             p.addToTopOfQueue(job);
+        }
+
     }
 
     @Override
@@ -127,7 +127,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     public void setConfig(String parameter, String value) throws Exception {
         validateSession();
         log += "Parameter: "+parameter+", Value: "+value+"\n";
-
+        System.out.println("configurations for parameter"+parameter+". by user :" + Session.getSession(this.remoteObjectLocalReference).username);
         configurations.put(parameter, value);
     }
 
@@ -154,10 +154,10 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
 
     private void validateSession() throws Exception {
         Session session=Session.getSession(this.remoteObjectLocalReference);
-        //System.out.println("mmmmm"+session.activationTime);
+
         if (session.isTimedOut()){
            RegistryBinder.unBindPrintService(this.remoteObjectLocalReference);
-            System.out.println("Session is timed out");
+            System.out.println("Session is timed out\n"+"Print service is down");
            throw new Exception("The session is timed out, please log-in again");
         }else {
             session.prolongSession();

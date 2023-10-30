@@ -25,10 +25,10 @@
     <properties>
         <start-class>src/main/java/datasecurity/ClientApplication</start-class>
 
-        <maven.compiler.source>19</maven.compiler.source>
-        <maven.compiler.target>19</maven.compiler.target>
+        <maven.compiler.source>16</maven.compiler.source>
+        <maven.compiler.target>16</maven.compiler.target>
 
-        <java.version>19</java.version>
+        <java.version>16</java.version>
     </properties>
 
 
@@ -47,46 +47,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.6.0</version>
-                <executions>
-                    <execution>
-
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-
-                            <archive>
-                                <manifest>
-                                    <mainClass>datasecurity.ClientApplication</mainClass>
-                                </manifest>
-                            </archive>
-                        </configuration>
-                    </execution>
-                </executions>
-                <configuration>
-
-                        <descriptorRefs>
-                            <descriptorRef>jar-with-dependencies</descriptorRef>
-                        </descriptorRefs>
-
-
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 
 </project>

@@ -12,7 +12,7 @@ public class Session {
     boolean isActive = false;
 
     //how long is the session
-    int duration = 5*60*1000;
+    int duration = 2*60*1000;
     long activationTime;
 
     String username;

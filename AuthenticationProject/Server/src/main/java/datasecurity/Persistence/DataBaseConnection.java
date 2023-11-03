@@ -18,7 +18,9 @@ public class DataBaseConnection {
         String salt="";
 
         try {
-
+            //locally path
+            String pathToTrustStore=
+            // in docker
             System.setProperty("javax.net.ssl.trustStore", "certificate/dbTrustStore.pfx");
             System.setProperty("javax.net.ssl.trustStorePassword", "group10");
             String dbhost = System.getenv("dbhostIp");

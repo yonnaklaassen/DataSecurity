@@ -39,11 +39,11 @@ RemoteObjectHandler rm;
         try {
             rm.getRemotePrintServiceObject().timOutSession();
         } catch (MalformedURLException | NotBoundException | RemoteException e) {
-            throw new RuntimeException(e);
+          //  throw new RuntimeException(e);
         }
         System.out.println("\u001B[31m"+"Session is destroyed"+"\u001B[37m");
         SecurityContextHolder.clearContext();
-        System.out.println(event);
+       // System.out.println(event);
     }
 
 

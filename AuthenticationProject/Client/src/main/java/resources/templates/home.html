@@ -19,7 +19,8 @@
 
             if (response.redirected) {
                 alert("Session is timed-out")
-                window.location.href="/"
+
+                window.location.href="/logout"
             }
 
             $("#logDiv").html(tex.replace(/\n/g, '<br>'))
@@ -37,7 +38,7 @@ async function startServer() {
         console.log(response)
         if (response.redirected) {
             alert("Session is timed-out")
-            window.location.href="/"
+            window.location.href="/logout"
         }
 
         const data = await response.json();
@@ -53,7 +54,7 @@ async function stopServer() {
         console.log(response)
         if (response.redirected) {
             alert("Session is timed-out")
-            window.location.href="/"
+            window.location.href="/logout"
         }
 
         const data = await response.json();
@@ -72,7 +73,7 @@ async function stopServer() {
             console.log(response)
             if (response.redirected) {
                 alert("Session is timed-out")
-                window.location.href="/"
+                window.location.href="/logout"
             }
 
             const data = await response.json();
@@ -93,7 +94,7 @@ async function queue() {
         if (response.redirected) {
 
             alert("Session is timed-out")
-            window.location.href="/"
+            window.location.href="/logout"
         }
         const  tex= await response.text()
         console.log(tex)
@@ -114,7 +115,7 @@ async function queue() {
             if (response.redirected) {
 
                 alert("Session is timed-out")
-                window.location.href="/"
+                window.location.href="/logout"
             }
 
             const  tex= await response.text()
@@ -136,7 +137,7 @@ async function queue() {
             if (response.redirected) {
 
                 alert("Session is timed-out")
-                window.location.href="/"
+                window.location.href="/logout"
             }
             const  tex= await response.text()
             console.log(tex)
@@ -158,7 +159,7 @@ async function queue() {
             if (response.redirected) {
 
                 alert("Session is timed-out")
-                window.location.href="/"
+                window.location.href="/logout"
             }
             const  tex= await response.text()
             console.log(tex)
@@ -179,7 +180,7 @@ async function queue() {
             if (response.redirected) {
 
                 alert("Session is timed-out")
-                window.location.href="/"
+                window.location.href="/logout"
             }
             const  tex= await response.text()
             console.log(tex)
@@ -224,6 +225,7 @@ async function queue() {
             flex-wrap: nowrap;
             width: 1517px;
             margin-right: -400px;
+            pointer-events: all;
 
         }
 
@@ -289,14 +291,14 @@ async function queue() {
     <span style="display: flex;position: relative;top: -29px;">You are logged-in as: <p th:text="${username}" style="color: #00a6ff"></p> </span>
 
 </div>
-<a  class="logoutLink"  href="/logout">Log-out</a>
+<a  class="logoutLink"  id="logout" href="/logout">Log-out</a>
 
     <button th:if="${status=='stop'}" id="startButton" class="btn btn-success " onclick="startServer()">Start Server</button>
     <button th:if="${status=='start'}" id="stopButton" class="btn btn-danger" onclick="stopServer()">Stop Server</button>
     <br/>
     <button th:if="${status=='start'}" id="restartButton" class="btn btn-dark" onclick="restartServer()">Restart Server</button>
 
-<div class="container mod">
+<div class="container mod" style="pointer-events: none">
 
     <div class="row justify-content-center mt-5">
         <div class="col-md-6">

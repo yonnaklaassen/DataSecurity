@@ -27,32 +27,12 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
     @Override
     public String authenticate(String username, String password) throws RemoteException, SQLException, NoSuchAlgorithmException {
 
-        //use secure KDF-based password hash - argon2id hybrid between 2d and ai
-        //{salt+KDF(password,salt)} - Keep different random salt for each encrypted password+the key derived by KDF
-        //Check:1.take the salt from the database
-        //      2.derive a key from the password for checking
-        //      3.compare the derived key with the key from the database.
-
-
-
-        /*pasword here is BZHzPykd7gblOKC6INg8arz73VS7KbWDy+1Gem1iSKk=
-        salt is MMq/BHKa5Lva/OwRduHi7g==
-        String hashedPassword = "BZHzPykd7gblOKC6INg8arz73VS7KbWDy+1Gem1iSKk=";
-        hashedPasswordFalse = "P+t76+uk9CfpI7o0iSZ/WA9hrHjKa6fJl3jZ1bFro6w=";
-        String hashedPasswordSalt = "MMq/BHKa5Lva/OwRduHi7g==";
-        String userPasswordTrue = "helloWorld";
-        String userPasswordFalse = "bye";*/
-
-
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
 
         String[] HashedPasswordAndSalt = dataBaseConnection.getHashedPasswordSalt(username);
         String hashedPassword = HashedPasswordAndSalt[1];
         String salt = HashedPasswordAndSalt[0];
         System.out.println("Start authenticating User:"+" "+username);
-        //System.out.println("hashedPassword"+hashedPassword);
-        //System.out.println("hashedPasswordSalt"+salt);
-        //System.out.println("generatedHash"+generateHash(password, salt));
 
         if(generateHash(password, salt).matches(hashedPassword)){
             //user authenticated

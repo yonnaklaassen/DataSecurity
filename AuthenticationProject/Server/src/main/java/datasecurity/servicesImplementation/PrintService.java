@@ -136,6 +136,13 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
         return this.log;
     }
 
+    @Override
+    public void timOutSession() {
+        Session session=Session.getSession(this.remoteObjectLocalReference);
+
+        session.isActive=false;
+    }
+
 
     public Printer findPrinter(String printerName) {
         for (Printer p : printers) {
@@ -163,9 +170,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
             session.prolongSession();
         }
     }
-    public Map<String, String> getConfigurations() {
-        return configurations;
-    }
+
 }
 
 

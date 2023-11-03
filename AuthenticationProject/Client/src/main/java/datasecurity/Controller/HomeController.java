@@ -5,9 +5,11 @@ import datasecurity.ClientSecurity.UsersConfig;
 import datasecurity.communication.RemoteObjectHandler;
 
 import datasecurity.models.Server;
+import datasecurity.session.SessionDestroyhandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -23,14 +25,15 @@ public class HomeController {
 private UsersConfig usersConfig;
 private Server server;
 private RemoteObjectHandler rmh;
+private SessionDestroyhandler sessionDestroyhandler;
 
 
-@Autowired
-public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _userConfig){
+    @Autowired
+public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _userConfig,SessionDestroyhandler _sessionDestroyhandler){
     server=_server;
     rmh=_rmh;
     usersConfig=_userConfig;
-
+    sessionDestroyhandler=_sessionDestroyhandler;
 }
     @RequestMapping("/")
     public  String root()
@@ -40,7 +43,7 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
     @RequestMapping("/login")
     public  String login()
     {
-        System.out.println(usersConfig.activeSession()+"--------"+usersConfig.getUsername());
+        //System.out.println(usersConfig.activeSession()+"--------"+usersConfig.getUsername());
         if (usersConfig.sessionStutus()){
             return "home";
         }else {
@@ -72,6 +75,11 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
         try {
             rmh.getRemotePrintServiceObject().start();
         }catch (Exception e){
+            if (e.getMessage().contains("The session is timed out, please log-in again")){
+                SecurityContextHolder.clearContext();
+                return new ResponseEntity<>( HttpStatus.FOUND);
+
+            }
             return ResponseEntity.ok("{\"data\":\""+ e.getMessage()+"\"}");
         }
         server.setStatus("start");
@@ -87,6 +95,11 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
         try {
             rmh.getRemotePrintServiceObject().stop();
         }catch (Exception e){
+            if (e.getMessage().contains("The session is timed out, please log-in again")){
+                SecurityContextHolder.clearContext();
+                return new ResponseEntity<>( HttpStatus.FOUND);
+
+            }
             return ResponseEntity.ok("{\"data\":\""+ e.getMessage()+"\"}");
         }
         server.setStatus("stop");
@@ -100,6 +113,11 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
             try {
                 rmh.getRemotePrintServiceObject().restart();
             } catch (Exception e) {
+                if (e.getMessage().contains("The session is timed out, please log-in again")){
+                    SecurityContextHolder.clearContext();
+                    return new ResponseEntity<>( HttpStatus.FOUND);
+
+                }
                 return ResponseEntity.ok("{\"data\":\"" + e.getMessage() + "\"}");
             }
 
@@ -120,6 +138,12 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
             rmh.getRemotePrintServiceObject().print(file,printer);
 
         }catch (Exception e){
+            if (e.getMessage().contains("The session is timed out")){
+                SecurityContextHolder.clearContext();
+                return new ResponseEntity<>( HttpStatus.FOUND);
+
+
+            }
             return ResponseEntity.ok(e.getMessage());
         }
         return ResponseEntity.ok(rmh.getRemotePrintServiceObject().getPrintLog());
@@ -128,34 +152,90 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
 
     @RequestMapping("/queue")
     public ResponseEntity<String> queue( @RequestParam("printer") String printer) throws Exception {
-        rmh.getRemotePrintServiceObject().queue(printer);
+        try{
+            rmh.getRemotePrintServiceObject().queue(printer);
+
+        }catch (Exception e){
+            if (e.getMessage().contains("The session is timed out, please log-in again")){
+                SecurityContextHolder.clearContext();
+                return new ResponseEntity<>( HttpStatus.FOUND);
+            }
+            return ResponseEntity.ok(e.getMessage());
+        }
+
         return ResponseEntity.ok(rmh.getRemotePrintServiceObject().getPrintLog());
 
     }
     @RequestMapping("/topQueue")
     public ResponseEntity<String> topQueue( @RequestParam("printer") String printer, @RequestParam("job") int job) throws Exception {
-        rmh.getRemotePrintServiceObject().topQueue(printer,job);
+        try{
+            rmh.getRemotePrintServiceObject().topQueue(printer,job);
+
+        }catch (Exception e){
+            if (e.getMessage().contains("The session is timed out, please log-in again")){
+                SecurityContextHolder.clearContext();
+                return new ResponseEntity<>( HttpStatus.FOUND);
+
+            }
+            return ResponseEntity.ok(e.getMessage());
+        }
+
+
         return ResponseEntity.ok(rmh.getRemotePrintServiceObject().getPrintLog());
 
     }
 
     @RequestMapping("/status")
     public ResponseEntity<String> status( @RequestParam("printer") String printer) throws Exception {
-        rmh.getRemotePrintServiceObject().status(printer);
+        try{
+            rmh.getRemotePrintServiceObject().status(printer);
+
+        }catch (Exception e){
+            if (e.getMessage().contains("The session is timed out, please log-in again")){
+                SecurityContextHolder.clearContext();
+                return new ResponseEntity<>( HttpStatus.FOUND);
+
+            }
+            return ResponseEntity.ok(e.getMessage());
+        }
         return ResponseEntity.ok(rmh.getRemotePrintServiceObject().getPrintLog());
 
     }
 
     @RequestMapping("/setConf")
     public ResponseEntity<String> setConf( @RequestParam("parameter") String parameter, @RequestParam("value") String value) throws Exception {
-        rmh.getRemotePrintServiceObject().setConfig(parameter,value);
+
+        try{
+            rmh.getRemotePrintServiceObject().setConfig(parameter,value);
+
+        }catch (Exception e){
+            if (e.getMessage().contains("The session is timed out, please log-in again")){
+                SecurityContextHolder.clearContext();
+                return new ResponseEntity<>( HttpStatus.FOUND);
+
+            }
+            return ResponseEntity.ok(e.getMessage());
+        }
+
         return ResponseEntity.ok(rmh.getRemotePrintServiceObject().getPrintLog());
 
     }
 
     @RequestMapping("/getConf")
     public ResponseEntity<String> getConf( @RequestParam("parameter") String parameter) throws Exception {
-        rmh.getRemotePrintServiceObject().readConfig(parameter);
+        try{
+            rmh.getRemotePrintServiceObject().readConfig(parameter);
+
+        }catch (Exception e){
+            if (e.getMessage().contains("The session is timed out, please log-in again")){
+                SecurityContextHolder.clearContext();
+                return new ResponseEntity<>( HttpStatus.FOUND);
+
+            }
+            return ResponseEntity.ok(e.getMessage());
+        }
+
+
         return ResponseEntity.ok(rmh.getRemotePrintServiceObject().getPrintLog());
 
     }

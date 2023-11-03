@@ -3,6 +3,8 @@ FROM mysql:8.0
 COPY db.sql /docker-entrypoint-initdb.d/
 COPY dbcertificate/* /etc/mysql/ssl/
 
+RUN chown -R mysql:mysql /etc/mysql/ssl/
+
 ENV MYSQL_ROOT_USER=root 
 ENV MYSQL_ROOT_PASSWORD=root
 ENV MYSQL_ALLOW_EMPTY_PASSWORD=no

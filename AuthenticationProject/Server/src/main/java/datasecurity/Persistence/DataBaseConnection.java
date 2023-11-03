@@ -8,8 +8,8 @@ public class DataBaseConnection {
 
     public DataBaseConnection() throws SQLException {
 
-
     }
+
 
 
 
@@ -19,11 +19,13 @@ public class DataBaseConnection {
 
         try {
 
-            System.setProperty("javax.net.ssl.trustStore", "files/dbcertificate/dbTrustStore.pfx");
+            System.setProperty("javax.net.ssl.trustStore", "certificate/dbTrustStore.pfx");
             System.setProperty("javax.net.ssl.trustStorePassword", "group10");
             String dbhost = System.getenv("dbhostIp");
-            connection = DriverManager.getConnection("jdbc:mysql://"+dbhost+":3306/db?useSSL=true","root","root");
-
+            connection = DriverManager.getConnection("jdbc:mysql://"+dbhost+":3306/db" +
+                    "?verifyServerCertificate=true" +
+                    "&useSSL=true&" +
+                    "requireSSL=true","root","root");
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM User WHERE username =? ");
             ps.setString(1, username);
 

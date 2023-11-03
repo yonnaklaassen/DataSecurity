@@ -17,24 +17,21 @@ public class Database_SSL_Verification {
 
 
 
-    // In this test we try to connect to the database without setting the useSSL property to false
+    // In this test we try to connect to the database with setting the useSSL property to false
     // test result passed if the connection throws an exception
     @Test
-    public void connect_Database_without_SSL() throws SQLException {
-
+    public void connect_Database_without_SSL(){
         Connection connection;
         try {
-            Assertions.assertThrows(SQLException.class,
+            Assertions.assertThrows(java.sql.SQLException.class,
                     (Executable) DriverManager.getConnection("jdbc:mysql://localhost:3306/db?" +
                             // Setting the SSL property to false
                                     "useSSL=false"
                             ,"root"
                             ,"root"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Test1 passed");
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
         }
-
     }
 
 

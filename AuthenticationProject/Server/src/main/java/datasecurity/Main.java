@@ -2,6 +2,7 @@ package datasecurity;
 
 
 import datasecurity.Shared.ConsoleColors;
+import datasecurity.servicesImplementation.AccessControlService;
 import datasecurity.servicesImplementation.AuthenticationService;
 import datasecurity.services.IAuthenticationService;
 import datasecurity.servicesImplementation.PrintService;
@@ -23,9 +24,8 @@ public class Main {
             RegistryBinder registryBinder = new RegistryBinder();
             System.out.println(ConsoleColors.GREEN + "Server is ready.");
             registryBinder.bindAuthenticationService();
-
-
-
+            AccessControlService accessControlService = new AccessControlService();
+            accessControlService.loadAccessControlList();
 
             while (true) {
                 Thread.sleep(1000);

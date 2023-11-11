@@ -43,6 +43,10 @@
             <scope>runtime</scope>
             <version>8.0.33</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
 
     </dependencies>
 

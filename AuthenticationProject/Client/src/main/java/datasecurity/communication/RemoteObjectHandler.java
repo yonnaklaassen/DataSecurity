@@ -2,6 +2,7 @@ package datasecurity.communication;
 
 import datasecurity.ClientApplication;
 import datasecurity.ClientSecurity.UsersConfig;
+import datasecurity.services.IAccessControlService;
 import datasecurity.services.IAuthenticationService;
 import datasecurity.services.IPrintService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class RemoteObjectHandler {
     Registry registry;
     IAuthenticationService authenticationService;
     IPrintService printService ;
+    IAccessControlService accessControlService;
 
     @Autowired
     UsersConfig userDetails;
@@ -48,6 +50,13 @@ public class RemoteObjectHandler {
         printService= (IPrintService)registry.lookup("printServiceObject"+userDetails.get_sessionAuthCookie());
 
         return printService;
+
+    }
+
+    public IAccessControlService getAccessControlServiceObject() throws MalformedURLException, NotBoundException, RemoteException {
+        accessControlService= (IAccessControlService)registry.lookup("accessControlServiceObject"+userDetails.get_sessionAuthCookie());
+
+        return accessControlService;
 
     }
 

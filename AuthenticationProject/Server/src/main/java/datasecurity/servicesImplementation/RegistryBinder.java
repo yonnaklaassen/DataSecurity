@@ -45,4 +45,9 @@ public class RegistryBinder {
         System.out.println("print service is stopped");
     }
 
+    public static void bindAccessControlService(String referenceCookie) throws NotBoundException, RemoteException {
+        registry.unbind("accessControlServiceObject"+referenceCookie);
+        System.out.println("Access Control Service started");
+    }
+
 }

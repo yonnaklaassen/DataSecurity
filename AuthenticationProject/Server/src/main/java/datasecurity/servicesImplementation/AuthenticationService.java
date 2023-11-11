@@ -8,6 +8,7 @@ import org.bouncycastle.crypto.params.Argon2Parameters;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.NoSuchAlgorithmException;
@@ -22,10 +23,8 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         super();
     }
 
-    //TODO: implement password storage (System File, Public File, DBMS)
-    //TODO: password verification DONE
     @Override
-    public String authenticate(String username, String password) throws RemoteException, SQLException, NoSuchAlgorithmException {
+    public String authenticate(String username, String password) throws RemoteException, SQLException, NoSuchAlgorithmException, NotBoundException {
 
         //use secure KDF-based password hash - argon2id hybrid between 2d and ai
         //{salt+KDF(password,salt)} - Keep different random salt for each encrypted password+the key derived by KDF
@@ -61,6 +60,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
             String encryptedCookie= generateHash(cookie,salt);
             Session session= new Session(username,encryptedCookie);
             RegistryBinder.bindPrintService(encryptedCookie);
+            RegistryBinder.bindAccessControlService(encryptedCookie);
             return encryptedCookie;
         }
 

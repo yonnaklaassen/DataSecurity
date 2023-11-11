@@ -4,19 +4,18 @@ package datasecurity.Controller;
 import datasecurity.ClientSecurity.UsersConfig;
 import datasecurity.communication.RemoteObjectHandler;
 
+import model.Permission;
 import datasecurity.models.Server;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.Iterator;
+import java.util.List;
 
 @Controller
 public class HomeController {
@@ -117,7 +116,12 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
                                         @RequestParam("file") String file) throws Exception {
 
         try{
-            rmh.getRemotePrintServiceObject().print(file,printer);
+           boolean permission = rmh.getAccessControlServiceObject().checkPermission(usersConfig.getUsername(), Permission.PRINT);
+           if(permission) {
+               rmh.getRemotePrintServiceObject().print(file,printer);
+           } else {
+               //TODO
+           }
 
         }catch (Exception e){
             return ResponseEntity.ok(e.getMessage());

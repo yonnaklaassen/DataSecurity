@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 public class PrintService extends UnicastRemoteObject  implements IPrintService {
     //TODO: implement print out the jobs from the printer queues.
@@ -91,7 +92,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
         Printer p = findPrinter(printer);
         if(p != null){
             log += "Queue for "+printer+":\n"+ p.getQueue();
-           // System.out.println(ConsoleColors.GREEN + p.getQueue());
+            System.out.println(ConsoleColors.GREEN + p.getQueue()+"By user"+Session.getSession(this.remoteObjectLocalReference).username);
         }
 
     }
@@ -113,14 +114,14 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
         Printer p = findPrinter(printer);
         if(p != null){
             log += "The status of " + printer + " is: " + p.getStatus()+"\n";
-            System.out.println(ConsoleColors.GREEN + "The status of " + printer + " is: " + p.getStatus());}
+            System.out.println(ConsoleColors.GREEN + "The status of " + printer + " is: " + p.getStatus()+"by user: "+Session.getSession(this.remoteObjectLocalReference).username);}
     }
 
     @Override
     public void readConfig(String parameter) throws Exception{
         validateSession();
         log += "Configuration for Parameter: " +parameter + ", Value: " + configurations.get(parameter)+"\n";
-        System.out.println(ConsoleColors.GREEN + "Parameter: " +parameter + ", Value: " + configurations.get(parameter));
+        System.out.println(ConsoleColors.GREEN + "Parameter: " +parameter + ",with value: " + configurations.get(parameter)+"By user:"+Session.getSession(this.remoteObjectLocalReference).username);
     }
 
     @Override
@@ -134,6 +135,13 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     @Override
     public String getPrintLog(){
         return this.log;
+    }
+
+    @Override
+    public void timOutSession() {
+        Session session=Session.getSession(this.remoteObjectLocalReference);
+
+        session.isActive=false;
     }
 
 
@@ -157,15 +165,13 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
 
         if (session.isTimedOut()){
            RegistryBinder.unBindPrintService(this.remoteObjectLocalReference);
-            System.out.println("Session is timed out\n"+"Print service is down");
-           throw new Exception("The session is timed out, please log-in again");
+            System.out.println("Session is timed out\n"+"Print service is down"+"user:"+Session.getSession(this.remoteObjectLocalReference).username+"is not authenticated anymore");
+           throw new TimeoutException("The session is timed out, please log-in again");
         }else {
             session.prolongSession();
         }
     }
-    public Map<String, String> getConfigurations() {
-        return configurations;
-    }
+
 }
 
 

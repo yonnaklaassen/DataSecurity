@@ -55,5 +55,7 @@ public interface IPrintService extends Serializable,Remote {
 
 
     String getPrintLog() throws  RemoteException;
+
+    void timOutSession() throws  RemoteException;
 }
 

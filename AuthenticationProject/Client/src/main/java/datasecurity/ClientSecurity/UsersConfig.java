@@ -11,7 +11,7 @@ public class UsersConfig implements UserDetails {
 
     String _username;
     String cookie;
-    boolean _isActiveSession;
+    public boolean _isActiveSession;
 
 
     public String get_sessionAuthCookie(){

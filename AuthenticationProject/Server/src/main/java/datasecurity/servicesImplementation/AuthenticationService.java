@@ -6,6 +6,8 @@ import datasecurity.services.IAuthenticationService;
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
 import org.bouncycastle.crypto.params.Argon2Parameters;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
@@ -25,24 +27,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
     //TODO: implement password storage (System File, Public File, DBMS)
     //TODO: password verification DONE
     @Override
-    public String authenticate(String username, String password) throws RemoteException, SQLException, NoSuchAlgorithmException {
-
-        //use secure KDF-based password hash - argon2id hybrid between 2d and ai
-        //{salt+KDF(password,salt)} - Keep different random salt for each encrypted password+the key derived by KDF
-        //Check:1.take the salt from the database
-        //      2.derive a key from the password for checking
-        //      3.compare the derived key with the key from the database.
-
-
-
-        /*pasword here is BZHzPykd7gblOKC6INg8arz73VS7KbWDy+1Gem1iSKk=
-        salt is MMq/BHKa5Lva/OwRduHi7g==
-        String hashedPassword = "BZHzPykd7gblOKC6INg8arz73VS7KbWDy+1Gem1iSKk=";
-        hashedPasswordFalse = "P+t76+uk9CfpI7o0iSZ/WA9hrHjKa6fJl3jZ1bFro6w=";
-        String hashedPasswordSalt = "MMq/BHKa5Lva/OwRduHi7g==";
-        String userPasswordTrue = "helloWorld";
-        String userPasswordFalse = "bye";*/
-
+    public String authenticate(String username, String password) throws Exception {
 
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
 
@@ -50,17 +35,14 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         String hashedPassword = HashedPasswordAndSalt[1];
         String salt = HashedPasswordAndSalt[0];
         System.out.println("Start authenticating User:"+" "+username);
-        //System.out.println("hashedPassword"+hashedPassword);
-        //System.out.println("hashedPasswordSalt"+salt);
-        //System.out.println("generatedHash"+generateHash(password, salt));
 
         if(generateHash(password, salt).matches(hashedPassword)){
             //user authenticated
             SecureRandom secureRandom =SecureRandom.getInstance("SHA1PRNG");
             String cookie= String.valueOf(secureRandom.nextInt());
-            String encryptedCookie= generateHash(cookie,salt);
-            Session session= new Session(username,encryptedCookie);
-            RegistryBinder.bindPrintService(encryptedCookie);
+            String encryptedCookie= encrypt(cookie,"MySecretKey123456789012345678901");
+            Session session= new Session(username,cookie);
+            RegistryBinder.bindPrintService(cookie);
             return encryptedCookie;
         }
 
@@ -91,6 +73,18 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         byte[] result = new byte[hashLength];
         generate.generateBytes(password.getBytes(StandardCharsets.UTF_8), result, 0, result.length);
         return Base64.getEncoder().encodeToString(result);
+    }
+
+
+    public static String encrypt(String valueToEncrypt, String secretKey) throws Exception {
+        byte[] encryptedBytes;
+
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+
+        encryptedBytes = cipher.doFinal(valueToEncrypt.getBytes());
+        return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 
 

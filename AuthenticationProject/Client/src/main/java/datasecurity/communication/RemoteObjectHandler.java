@@ -52,18 +52,5 @@ public class RemoteObjectHandler {
     }
 
 
-  /*  public static void main(String[] args) throws RemoteException, NotBoundException, SQLException {
-        System.setProperty("javax.net.ssl.trustStore", "certificate/certificate.pfx");
-        System.setProperty("javax.net.ssl.trustStorePassword", "group10");
-        RMIClientSocketFactory clientFactory = new SslRMIClientSocketFactory();
-        Registry registry = LocateRegistry.getRegistry("localhost", 1099, clientFactory);
-        IAuthenticationService authenticationService =(IAuthenticationService) registry.lookup("authenticationObject");
-        String test = authenticationService.authenticate("alice23","helloworld");
-        System.out.println(test);
-        IPrintService printService =  (IPrintService) registry.lookup("printServiceObject"+test);
-        printService.start();
 
-
-    }
-*/
 }

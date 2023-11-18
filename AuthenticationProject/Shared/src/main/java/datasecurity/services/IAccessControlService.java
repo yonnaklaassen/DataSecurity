@@ -8,5 +8,5 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public interface IAccessControlService extends Serializable, Remote {
-     boolean checkPermission(String username, Permission operation) throws RemoteException;
+     List<Permission> getPermissionsByUser(String username) throws RemoteException;
 }

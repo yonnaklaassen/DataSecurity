@@ -28,21 +28,6 @@ public class AccessControlService extends UnicastRemoteObject implements IAccess
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode aclData = objectMapper.readTree(new File("files/AccessControlList.json"));
 
-        // Load roles
-        //  JsonNode rolesArray = aclData.get("roles");
-        // for (JsonNode roleNode : rolesArray) {
-        //      String roleName = roleNode.get("name").asText();
-        //      List<String> permissionListStrings = new ArrayList<>();
-        //     for(JsonNode permissions : roleNode.get("permissions")) {
-        //        permissionListStrings.add(permissions.asText());
-        //   }
-        //    List<Permission> permissionList = new ArrayList<>();
-        //    for (String perm : permissionListStrings) {
-        //        permissionList.add(convertStringToPermission(perm));
-        //    }
-        //    roles.add(new Role(roleName, permissionList));
-        //  }
-
         // Load users
         JsonNode usersArray = aclData.get("users");
         for (JsonNode userNode : usersArray) {
@@ -85,6 +70,10 @@ public class AccessControlService extends UnicastRemoteObject implements IAccess
         return false; // Handle error if user not found
     }
 
+    public List<Permission> getPermissionsByUser(String username) {
+    return Objects.requireNonNull(getUserByUsername(username)).getPermissionList();
+    }
+
     private User getUserByUsername(String username) {
         for (User user : users) {
             if (user.getUsername().equals(username)) {
@@ -93,5 +82,4 @@ public class AccessControlService extends UnicastRemoteObject implements IAccess
         }
         return null; // Handle error if user not found
     }
-
 }

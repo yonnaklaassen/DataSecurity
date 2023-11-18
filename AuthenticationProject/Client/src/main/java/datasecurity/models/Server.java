@@ -34,4 +34,13 @@ public Server(){
     }
     return false;
     }
+
+    public boolean permission(Permission permission) {
+        for(Permission perm : permissionList) {
+            if(perm == permission) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -1,50 +1,32 @@
 {
-  "roles": [
-    {
-      "name": "admin",
-      "permissions": ["start", "stop", "restart", "status", "read_Config", "set_Config", "print", "queue", "top_Queue"]
-    },
-    {
-      "name": "janitor",
-      "permissions": ["start", "stop", "restart", "status", "read_Config", "set_Config"]
-    },
-    {
-      "name": "power_User",
-      "permissions": ["print", "queue", "top_Queue", "restart"]
-    },
-    {
-      "name": "user",
-      "permissions": ["print", "queue"]
-    }
-  ],
   "users": [
     {
       "username": "alice23",
-      "role": "admin"
+      "permissions": ["start", "stop", "restart", "status", "read_Config", "set_Config", "print", "queue", "top_Queue"]
     },
     {
       "username": "bob23",
-      "role": "janitor"
+      "permissions": ["start", "stop", "restart", "status", "read_Config", "set_Config"]
     },
     {
       "username": "cecilia23",
-      "role": "power_User"
+      "permissions": ["print", "queue", "top_Queue", "restart"]
     },
     {
       "username": "david23",
-      "role": "user"
+      "permissions": ["print", "queue"]
     },
     {
-      "username": "erica3",
-      "role": "user"
+      "username": "erica23",
+      "permissions": ["print", "queue"]
     },
     {
       "username": "fred23",
-      "role": "user"
+      "permissions": ["print", "queue"]
     },
     {
       "username": "george23",
-      "role": "user"
+      "permissions": ["print", "queue"]
     }
   ]
 }

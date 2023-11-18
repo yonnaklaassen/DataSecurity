@@ -1,25 +1,28 @@
 package datasecurity.model;
 
+import model.Permission;
+
 import java.io.Serializable;
+import java.util.List;
 
 public class User implements Serializable {
     private String username;
-    private Role role;
+    private List<Permission> permissionList;
 
-    public User(String username, Role role) {
+    public User(String username, List<Permission> permissions) {
         this.username = username;
-        this.role = role;
+        this.permissionList = permissions;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public Role getRole() {
-        return role;
+    public List<Permission> getPermissionList() {
+        return permissionList;
     }
 
     public String toString() {
-        return "Username: " + getUsername() + "\nRole: " + getRole().getName();
+        return "Username: " + getUsername() + "\nPermissions: " + getPermissionList();
     }
 }

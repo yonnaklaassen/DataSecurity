@@ -3,6 +3,7 @@ package datasecurity.model;
 import model.Permission;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class User implements Serializable {

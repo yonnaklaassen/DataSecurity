@@ -60,7 +60,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
             String encryptedCookie= generateHash(cookie,salt);
             Session session= new Session(username,encryptedCookie);
             RegistryBinder.bindPrintService(encryptedCookie);
-            RegistryBinder.bindAccessControlService(encryptedCookie);
+            RegistryBinder.bindAccessControlService();
             return encryptedCookie;
         }
 

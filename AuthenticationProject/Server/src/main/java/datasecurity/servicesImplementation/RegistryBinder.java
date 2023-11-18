@@ -1,5 +1,6 @@
 package datasecurity.servicesImplementation;
 
+import datasecurity.services.IAccessControlService;
 import datasecurity.services.IAuthenticationService;
 
 import javax.rmi.ssl.SslRMIServerSocketFactory;
@@ -7,7 +8,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.RMIServerSocketFactory;
 
 public class RegistryBinder {
 
@@ -39,15 +39,14 @@ public class RegistryBinder {
 
     }
 
-
     public static void unBindPrintService(String referenceCookie) throws NotBoundException, RemoteException {
         registry.unbind("printServiceObject"+referenceCookie);
         System.out.println("print service is stopped");
     }
 
-    public static void bindAccessControlService(String referenceCookie) throws NotBoundException, RemoteException {
-        registry.unbind("accessControlServiceObject"+referenceCookie);
+    public static void bindAccessControlService() throws RemoteException {
+        IAccessControlService accessControlServiceObject = new AccessControlService();
+        registry.rebind("accessControlServiceObject", accessControlServiceObject);
         System.out.println("Access Control Service started");
     }
-
 }

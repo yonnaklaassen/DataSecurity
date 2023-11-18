@@ -39,8 +39,8 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
     }
     @RequestMapping("/login")
     public  String login() throws MalformedURLException, NotBoundException, RemoteException {
-        System.out.println(usersConfig.activeSession()+"--------"+usersConfig.getUsername());
         if (usersConfig.sessionStutus()){
+            System.out.println(usersConfig.activeSession()+"--------"+usersConfig.getUsername());
             List<Permission> permissions = rmh.getAccessControlServiceObject().getPermissionsByUser(usersConfig.getUsername());
             server.setPermissions(permissions);
             return "home";

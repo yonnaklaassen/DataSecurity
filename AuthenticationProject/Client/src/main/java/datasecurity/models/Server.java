@@ -3,6 +3,7 @@ package datasecurity.models;
 import model.Permission;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -12,6 +13,7 @@ public class Server {
 
 public Server(){
     status="stop";
+    permissionList = new ArrayList<>();
 
 }
     public String getStatus() {

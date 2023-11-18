@@ -1,6 +1,5 @@
 package datasecurity.communication;
 
-import datasecurity.ClientApplication;
 import datasecurity.ClientSecurity.UsersConfig;
 import datasecurity.services.IAccessControlService;
 import datasecurity.services.IAuthenticationService;
@@ -17,8 +16,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMIClientSocketFactory;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 
 @Component
@@ -31,7 +28,7 @@ public class RemoteObjectHandler {
     @Autowired
     UsersConfig userDetails;
 
-    public RemoteObjectHandler( ) throws IOException, NotBoundException {
+    public RemoteObjectHandler( ) throws IOException, NotBoundException, RemoteException {
 
         System.setProperty("javax.net.ssl.trustStore", "certificate/RMI_ClientTrustStore.pfx");
         System.setProperty("javax.net.ssl.trustStorePassword", "group10");
@@ -53,11 +50,9 @@ public class RemoteObjectHandler {
 
     }
 
-    public IAccessControlService getAccessControlServiceObject() throws MalformedURLException, NotBoundException, RemoteException {
-        accessControlService= (IAccessControlService)registry.lookup("accessControlServiceObject"+userDetails.get_sessionAuthCookie());
-
+    public IAccessControlService getAccessControlServiceObject() throws NotBoundException, RemoteException {
+        accessControlService = (IAccessControlService)registry.lookup("accessControlServiceObject");
         return accessControlService;
-
     }
 
 

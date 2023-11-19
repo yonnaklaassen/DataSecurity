@@ -8,6 +8,7 @@ import datasecurity.model.User;
 import datasecurity.services.IAccessControlService;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -27,7 +28,21 @@ public class AccessControlService extends UnicastRemoteObject implements IAccess
     public void loadAccessControlList() {
     try {
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode aclData = objectMapper.readTree(new File("files/AccessControlList.json"));
+
+        String filePath1 = "/accessControl/AccessControlList.json";
+        String filePath2 = "Authentication-Project-docker-ready/Authentication-Project/accessControl/AccessControlList.json";
+
+        File file1 = new File(filePath1);
+        File file2 = new File(filePath2);
+
+        JsonNode aclData;
+        if (file1.exists()) {
+            aclData = objectMapper.readTree(file1);
+        } else if (file2.exists()) {
+            aclData = objectMapper.readTree(file2);
+        } else {
+            throw new FileNotFoundException("AccessControlList.json not found in either path: " + filePath1 + " or " + filePath2);
+        }
 
         // Load users
         JsonNode usersArray = aclData.get("users");

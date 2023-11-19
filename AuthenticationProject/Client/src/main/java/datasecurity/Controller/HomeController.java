@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -37,10 +38,11 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
     {
         return "redirect:/home";
     }
+
     @RequestMapping("/login")
     public  String login() throws MalformedURLException, NotBoundException, RemoteException {
+        System.out.println(usersConfig.activeSession()+"--------"+usersConfig.getUsername());
         if (usersConfig.sessionStutus()){
-            System.out.println(usersConfig.activeSession()+"--------"+usersConfig.getUsername());
             List<Permission> permissions = rmh.getAccessControlServiceObject().getPermissionsByUser(usersConfig.getUsername());
             server.setPermissions(permissions);
             return "home";
@@ -52,6 +54,7 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
     public String handleError() {
         return "redirect:/home";
     }
+
     @RequestMapping(value = "/home", method = RequestMethod.GET)
     public  String home(ModelMap map)
     {
@@ -68,6 +71,7 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
         public ResponseEntity<String> startServer(ModelMap map)  {
         if(server.permission(Permission.START)) {
             try {
+                System.out.println(Color.green + "Permissions for start accepted");
                 rmh.getRemotePrintServiceObject().start();
             }catch (Exception e){
                 return ResponseEntity.ok("{\"data\":\""+ e.getMessage()+"\"}");

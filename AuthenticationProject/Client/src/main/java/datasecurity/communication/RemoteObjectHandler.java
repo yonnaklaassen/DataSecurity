@@ -28,8 +28,7 @@ public class RemoteObjectHandler {
     @Autowired
     UsersConfig userDetails;
 
-    public RemoteObjectHandler( ) throws IOException, NotBoundException, RemoteException {
-
+    public RemoteObjectHandler( ) throws IOException, NotBoundException{
         System.setProperty("javax.net.ssl.trustStore", "certificate/RMI_ClientTrustStore.pfx");
         System.setProperty("javax.net.ssl.trustStorePassword", "group10");
         String host = System.getenv("hostIp");
@@ -38,12 +37,12 @@ public class RemoteObjectHandler {
         authenticationService =(IAuthenticationService) registry.lookup("authenticationObject");
     }
 
-    public IAuthenticationService getRemoteAuthenticationObject() throws MalformedURLException, NotBoundException, RemoteException {
+    public IAuthenticationService getRemoteAuthenticationObject() {
 
         return authenticationService;
 
     }
-    public IPrintService getRemotePrintServiceObject() throws MalformedURLException, NotBoundException, RemoteException {
+    public IPrintService getRemotePrintServiceObject() throws NotBoundException, RemoteException {
         printService= (IPrintService)registry.lookup("printServiceObject"+userDetails.get_sessionAuthCookie());
 
         return printService;

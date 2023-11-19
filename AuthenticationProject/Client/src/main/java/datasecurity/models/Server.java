@@ -14,7 +14,6 @@ public class Server {
 public Server(){
     status="stop";
     permissionList = new ArrayList<>();
-
 }
     public String getStatus() {
         return status;
@@ -26,15 +25,6 @@ public Server(){
 
     public void setPermissions(List<Permission> permissions) {
     permissionList = permissions;
-    }
-
-    public boolean permission(String action) {
-    for(Permission perm : permissionList) {
-        if(perm.name().equalsIgnoreCase(action)) {
-            return true;
-        }
-    }
-    return false;
     }
 
     public boolean permission(Permission permission) {

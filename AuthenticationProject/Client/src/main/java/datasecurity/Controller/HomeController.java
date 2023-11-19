@@ -40,11 +40,9 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
     }
 
     @RequestMapping("/login")
-    public  String login() throws MalformedURLException, NotBoundException, RemoteException {
-        System.out.println(usersConfig.activeSession()+"--------"+usersConfig.getUsername());
+    public  String login() {
         if (usersConfig.sessionStutus()){
-            List<Permission> permissions = rmh.getAccessControlServiceObject().getPermissionsByUser(usersConfig.getUsername());
-            server.setPermissions(permissions);
+        //    System.out.println(usersConfig.activeSession()+"home--------"+usersConfig.getUsername());
             return "home";
         }else {
             return "login";
@@ -56,22 +54,20 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
     }
 
     @RequestMapping(value = "/home", method = RequestMethod.GET)
-    public  String home(ModelMap map)
-    {
+    public  String home(ModelMap map) throws NotBoundException, RemoteException {
         if (usersConfig.getUsername()!=null){
             map.addAttribute("username",usersConfig.getUsername());
+            List<Permission> permissions = rmh.getAccessControlServiceObject().getPermissionsByUser(usersConfig.getUsername());
+            server.setPermissions(permissions);
         }
         map.addAttribute("status",server.getStatus());
         return "home";
     }
 
-
-
     @RequestMapping("/startServer")
         public ResponseEntity<String> startServer(ModelMap map)  {
         if(server.permission(Permission.START)) {
             try {
-                System.out.println(Color.green + "Permissions for start accepted");
                 rmh.getRemotePrintServiceObject().start();
             }catch (Exception e){
                 return ResponseEntity.ok("{\"data\":\""+ e.getMessage()+"\"}");

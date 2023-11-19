@@ -15,6 +15,7 @@ public class Main {
             RegistryBinder registryBinder = new RegistryBinder();
             System.out.println(ConsoleColors.GREEN + "Server is ready.");
             registryBinder.bindAuthenticationService();
+            registryBinder.bindAccessControlService();
             while (true) {
                 Thread.sleep(1000);
             }

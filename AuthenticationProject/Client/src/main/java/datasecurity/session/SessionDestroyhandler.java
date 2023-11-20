@@ -32,15 +32,16 @@ RemoteObjectHandler rm;
     @Override
     public void sessionDestroyed(HttpSessionEvent event) {
 
-        usersConfig.seUsername("");
-        usersConfig.set_sessionAuthCookie("");
-        usersConfig._isActiveSession=false;
-        server.setStatus("stop");
+
+        //server.setStatus("stop");
         try {
             rm.getRemotePrintServiceObject().timOutSession();
         } catch (MalformedURLException | NotBoundException | RemoteException e) {
-          //  throw new RuntimeException(e);
+          e.printStackTrace();
         }
+        usersConfig.seUsername("");
+        usersConfig.set_sessionAuthCookie("");
+        usersConfig._isActiveSession=false;
         System.out.println("\u001B[31m"+"Session is destroyed"+"\u001B[37m");
         SecurityContextHolder.clearContext();
        // System.out.println(event);

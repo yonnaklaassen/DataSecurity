@@ -1,21 +1,16 @@
 package datasecurity.ClientSecurity;
 
 import datasecurity.communication.RemoteObjectHandler;
+import datasecurity.models.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import java.net.MalformedURLException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import java.util.Base64;
 
 
@@ -24,6 +19,8 @@ public class ServerAuthentication implements AuthenticationProvider {
     RemoteObjectHandler remoteObjectHandler;
     @Autowired
     UsersConfig userDetails;
+    @Autowired
+    Server server;
 
 
     //@lombok.SneakyThrows
@@ -40,8 +37,11 @@ public class ServerAuthentication implements AuthenticationProvider {
 
 
         if (authStatus) {
-
-            return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+            try {
+                return new UsernamePasswordAuthenticationToken(userDetails, password, remoteObjectHandler.getAuthorities());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         } else {
             // Authentication failed
             throw new UsernameNotFoundException("Authentication failed");
@@ -54,16 +54,19 @@ public class ServerAuthentication implements AuthenticationProvider {
     }
 
     private boolean isAuthenticationValid(String username, String password) throws Exception {
-        String authStatus=decrypt(remoteObjectHandler.getRemoteAuthenticationObject().authenticate(username,password),"MySecretKey123456789012345678901");
+        String authStatus= remoteObjectHandler.getRemoteAuthenticationObject().authenticate(username,password);
+
         if(!authStatus.equals("false")){
-            userDetails.set_sessionAuthCookie(authStatus);
+            userDetails.set_sessionAuthCookie(decrypt(authStatus,"MySecretKey123456789012345678901"));
             userDetails.seUsername(username);
             userDetails._isActiveSession=true;
+
             return true;
         }
         return false;
 
     }
+
     public static String decrypt(String encryptedValue, String secretKey) throws Exception {
         byte[] decryptedBytes;
 
@@ -75,5 +78,17 @@ public class ServerAuthentication implements AuthenticationProvider {
         decryptedBytes = cipher.doFinal(encryptedBytes);
         return new String(decryptedBytes);
     }
+
+    public static String encrypt(String valueToEncrypt, String secretKey) throws Exception {
+        byte[] encryptedBytes;
+
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+
+        encryptedBytes = cipher.doFinal(valueToEncrypt.getBytes());
+        return Base64.getEncoder().encodeToString(encryptedBytes);
+    }
+
 
 }

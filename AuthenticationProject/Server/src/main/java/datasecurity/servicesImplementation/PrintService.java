@@ -4,22 +4,18 @@ package datasecurity.servicesImplementation;
 
 
 import datasecurity.Shared.ConsoleColors;
+import datasecurity.domain.AccessManager;
+import datasecurity.domain.RegistryBinder;
+import datasecurity.domain.Session;
 import datasecurity.model.PrintJob;
 import datasecurity.model.Printer;
 import datasecurity.services.IPrintService;
-
-import java.rmi.NotBoundException;
+import datasecurity.Enum.Role;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
+import java.util.*;
 
 public class PrintService extends UnicastRemoteObject  implements IPrintService {
-    //TODO: implement print out the jobs from the printer queues.
-    //TODO: consider logger or simple console print outs for each action
     private List<Printer> printers;
     private Map<String, String> configurations;
     private String log;
@@ -37,22 +33,26 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
         printers.add(new Printer("Printer1"));
         printers.add(new Printer("Printer2"));
         printers.add(new Printer("Printer3"));
-
-
     }
 
     @Override
     public void start() throws Exception{
+        ArrayList<Role> acceptedRoles= AccessManager.getAcceptedRoles("start");
         validateSession();
+        validateAccess(acceptedRoles);
+        String username = Session.getSession(this.remoteObjectLocalReference).getUser().getUsername();
         log="Print server started\n";
-        System.out.println(ConsoleColors.GREEN + "Print server started by user :" + Session.getSession(this.remoteObjectLocalReference).username );
+        System.out.println(ConsoleColors.GREEN + "Print server started by user :" + username );
         setAllPrinterStatus(Printer.Status.ON);
     }
 
     @Override
     public void stop() throws Exception {
+        ArrayList<Role> acceptedRoles= AccessManager.getAcceptedRoles("stop");
         validateSession();
-        System.out.println(ConsoleColors.RED + "Print server stopped by user :" + Session.getSession(this.remoteObjectLocalReference).username);
+        validateAccess(acceptedRoles);
+        String username = Session.getSession(this.remoteObjectLocalReference).getUser().getUsername();
+        System.out.println(ConsoleColors.RED + "Print server stopped by user :" + username);
         setAllPrinterStatus(Printer.Status.OFF);
         log+="Print server stopped\n";
     }
@@ -60,9 +60,12 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
 
     @Override
     public void restart() throws Exception {
+        ArrayList<Role> acceptedRoles= AccessManager.getAcceptedRoles("restart");
         validateSession();
+        validateAccess(acceptedRoles);
+        String username = Session.getSession(this.remoteObjectLocalReference).getUser().getUsername();
         log = "Print server restarted";
-        System.out.println(ConsoleColors.ORANGE + "Print server is restarting  by user :" + Session.getSession(this.remoteObjectLocalReference).username);
+        System.out.println(ConsoleColors.ORANGE + "Print server is restarting  by user :" + Session.getSession(this.remoteObjectLocalReference).getUser().getUsername());
         stop();
         setAllPrinterStatus(Printer.Status.RESTARTING);
         for (Printer printer : printers) {
@@ -74,63 +77,82 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
 
     @Override
     public void print(String filename, String printer) throws Exception {
+        ArrayList<Role> acceptedRoles= AccessManager.getAcceptedRoles("print");
         validateSession();
+        validateAccess(acceptedRoles);
+        String username = Session.getSession(this.remoteObjectLocalReference).getUser().getUsername();
         printJobCount++;
         Printer p = findPrinter(printer);
         if(p != null)
             p.setStatus(Printer.Status.ON);
-            p.addToQueue(new PrintJob(printJobCount, filename));
+        p.addToQueue(new PrintJob(printJobCount, filename));
 
         log += printer+" starts printing file: "+filename+"\n";
-        System.out.println(ConsoleColors.GREEN +printer+" starts printing file: "+filename +" by user :" + Session.getSession(this.remoteObjectLocalReference).username);
+        System.out.println(ConsoleColors.GREEN +printer+" starts printing file: "+filename +" by user :" + username);
     }
 
 
     @Override
     public void queue(String printer) throws Exception {
+        ArrayList<Role> acceptedRoles= AccessManager.getAcceptedRoles("queue");
         validateSession();
+        validateAccess(acceptedRoles);
+
+        String username = Session.getSession(this.remoteObjectLocalReference).getUser().getUsername();
         Printer p = findPrinter(printer);
         if(p != null){
             log += "Queue for "+printer+":\n"+ p.getQueue();
-            System.out.println(ConsoleColors.GREEN + p.getQueue()+"By user"+Session.getSession(this.remoteObjectLocalReference).username);
         }
-
     }
 
     @Override
     public void topQueue(String printer, int job)throws Exception {
+        ArrayList<Role> acceptedRoles= AccessManager.getAcceptedRoles("top_Queue");
         validateSession();
+        validateAccess(acceptedRoles);
+        String username = Session.getSession(this.remoteObjectLocalReference).getUser().getUsername();
         Printer p = findPrinter(printer);
         if(p != null){
-            log += "Job: <"+ job + "> is on the top of the queue for printer :"+printer+"\n";
+            log += "Job: <"+ job + "> is put on the top of the queue for printer :"+printer+"\n";
             p.addToTopOfQueue(job);
         }
-
     }
 
     @Override
     public void status(String printer) throws Exception {
+        ArrayList<Role> acceptedRoles= AccessManager.getAcceptedRoles("status");
         validateSession();
+        validateAccess(acceptedRoles);
+
+        String username = Session.getSession(this.remoteObjectLocalReference).getUser().getUsername();
         Printer p = findPrinter(printer);
         if(p != null){
             log += "The status of " + printer + " is: " + p.getStatus()+"\n";
-            System.out.println(ConsoleColors.GREEN + "The status of " + printer + " is: " + p.getStatus()+"by user: "+Session.getSession(this.remoteObjectLocalReference).username);}
+            System.out.println(ConsoleColors.GREEN + "The status of " + printer + " is: " + p.getStatus());}
     }
 
     @Override
     public void readConfig(String parameter) throws Exception{
+        ArrayList<Role> acceptedRoles= AccessManager.getAcceptedRoles("read_Config");
         validateSession();
+        validateAccess(acceptedRoles);
+        String username = Session.getSession(this.remoteObjectLocalReference).getUser().getUsername();
         log += "Configuration for Parameter: " +parameter + ", Value: " + configurations.get(parameter)+"\n";
-        System.out.println(ConsoleColors.GREEN + "Parameter: " +parameter + ",with value: " + configurations.get(parameter)+"By user:"+Session.getSession(this.remoteObjectLocalReference).username);
+        System.out.println(ConsoleColors.GREEN + "Parameter: " +parameter + ", Value: " + configurations.get(parameter)+". by user :" + username);
     }
 
     @Override
     public void setConfig(String parameter, String value) throws Exception {
+        ArrayList<Role> acceptedRoles= AccessManager.getAcceptedRoles("set_Config");
         validateSession();
+        validateAccess(acceptedRoles);
+
+        String username = Session.getSession(this.remoteObjectLocalReference).getUser().getUsername();
         log += "Parameter: "+parameter+", Value: "+value+"\n";
-        System.out.println("configurations for parameter"+parameter+". by user :" + Session.getSession(this.remoteObjectLocalReference).username);
+        System.out.println("configurations for parameter"+parameter+". by user :" + username);
         configurations.put(parameter, value);
     }
+
 
     @Override
     public String getPrintLog(){
@@ -138,10 +160,8 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     }
 
     @Override
-    public void timOutSession() {
-        Session session=Session.getSession(this.remoteObjectLocalReference);
-
-        session.isActive=false;
+    public void timOutSession() throws RemoteException {
+        Session.getSession(this.remoteObjectLocalReference).isActive=false;
     }
 
 
@@ -164,13 +184,27 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
         Session session=Session.getSession(this.remoteObjectLocalReference);
 
         if (session.isTimedOut()){
-           RegistryBinder.unBindPrintService(this.remoteObjectLocalReference);
-            System.out.println("Session is timed out\n"+"Print service is down"+"user:"+Session.getSession(this.remoteObjectLocalReference).username+"is not authenticated anymore");
-           throw new TimeoutException("The session is timed out, please log-in again");
+            RegistryBinder.unBindPrintService(this.remoteObjectLocalReference);
+            System.out.println("Session is timed out\n"+"Print service is down");
+            throw new Exception("The session is timed out, please log-in again");
         }else {
             session.prolongSession();
         }
     }
+
+    private void validateAccess(ArrayList<Role> acceptedRoles) throws Exception {
+        ArrayList<Role>userRoles= new ArrayList<>(AccessManager.loadUserRoles(this.remoteObjectLocalReference));
+        try {
+            userRoles.retainAll(acceptedRoles);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (userRoles.isEmpty()){
+            throw new Exception("Your role does not permit you to perform this operation, please contact the service administrator");
+        }
+    }
+
+
 
 }
 

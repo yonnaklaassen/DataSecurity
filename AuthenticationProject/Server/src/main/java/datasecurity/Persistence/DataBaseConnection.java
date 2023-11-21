@@ -22,6 +22,10 @@ public class DataBaseConnection {
             System.setProperty("javax.net.ssl.trustStore", "files/dbcertificate/dbTrustStore.pfx");
             System.setProperty("javax.net.ssl.trustStorePassword", "group10");
             String dbhost = System.getenv("dbhostIp");
+            if(dbhost==null){
+                dbhost="localhost";
+            }
+
             connection = DriverManager.getConnection("jdbc:mysql://"+dbhost+":3306/db?useSSL=true","root","root");
 
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM User WHERE username =? ");

@@ -2,6 +2,7 @@ package datasecurity.models;
 
 import model.Permission;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.ModelMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +24,12 @@ public Server(){
         this.status = status;
     }
 
-    public void setPermissions(List<Permission> permissions) {
+    public void setPermissions(List<Permission> permissions, ModelMap map) {
     permissionList = permissions;
+
+    for (Permission perm: permissionList) {
+        map.addAttribute(perm.toString(), "true");
+    }
     }
 
     public boolean permission(Permission permission) {

@@ -291,10 +291,10 @@ async function queue() {
 </div>
 <a  class="logoutLink"  href="/logout">Log-out</a>
 
-    <button th:if="${status=='stop'}" id="startButton" class="btn btn-success " onclick="startServer()">Start Server</button>
-    <button th:if="${status=='start'}" id="stopButton" class="btn btn-danger" onclick="stopServer()">Stop Server</button>
+    <button th:if="${status=='stop' and START=='true'}" id="startButton" class="btn btn-success " onclick="startServer()">Start Server</button>
+    <button th:if="${status=='start' and STOP=='true'}" id="stopButton" class="btn btn-danger" onclick="stopServer()">Stop Server</button>
     <br/>
-    <button th:if="${status=='start'}" id="restartButton" class="btn btn-dark" onclick="restartServer()">Restart Server</button>
+    <button th:if="${status=='start' and RESTART=='true'}" id="restartButton" class="btn btn-dark" onclick="restartServer()">Restart Server</button>
 
 <div class="container mod">
 
@@ -303,7 +303,7 @@ async function queue() {
             <br/>
 
             <div class="containerDiv">
-                <div th:if="${status=='start'}" class="card mt-3">
+                <div th:if="${status=='start' and PRINT=='true'}" class="card mt-3">
                     <div class="card-body">
                         <h1 class="mt-3 custom-heading">Print File</h1>
 
@@ -329,7 +329,7 @@ async function queue() {
 
 
 
-                <div th:if="${status=='start'}" class="card mt-3">
+                <div th:if="${status=='start' and QUEUE=='true'}" class="card mt-3">
                     <div class="card-body">
                         <h1 class="mt-3 custom-heading">Queue Printer</h1>
 
@@ -350,7 +350,7 @@ async function queue() {
 
 
 
-                <div th:if="${status=='start'}" class="card mt-3">
+                <div th:if="${status=='start' and TOP_QUEUE=='true'}" class="card mt-3">
                     <div class="card-body">
                         <h1 class="mt-3 custom-heading">Top Queue</h1>
 
@@ -372,7 +372,7 @@ async function queue() {
                     </div>
                 </div>
 
-                <div th:if="${status=='start'}" class="card mt-3">
+                <div th:if="${status=='start' and STATUS=='true'}" class="card mt-3">
                     <div class="card-body">
                         <h1 class="mt-3 custom-heading">Get Printer status</h1>
 
@@ -391,7 +391,7 @@ async function queue() {
                 </div>
 
 
-                <div th:if="${status=='start'}" class="card mt-3">
+                <div th:if="${status=='start' and SET_CONFIG=='true'}" class="card mt-3">
                     <div class="card-body">
                         <h1 class="mt-3 custom-heading">Set configuration</h1>
                         <div class="form-group">
@@ -412,7 +412,7 @@ async function queue() {
 
 
 
-                <div th:if="${status=='start'}" class="card mt-3">
+                <div th:if="${status=='start' and READ_CONFIG=='true'}" class="card mt-3">
                     <div class="card-body">
                         <h1 class="mt-3 custom-heading">Read configuration</h1>
                         <div class="form-group">

@@ -58,7 +58,7 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
         if (usersConfig.getUsername()!=null){
             map.addAttribute("username",usersConfig.getUsername());
             List<Permission> permissions = rmh.getAccessControlServiceObject().getPermissionsByUser(usersConfig.getUsername());
-            server.setPermissions(permissions);
+            server.setPermissions(permissions, map);
         }
         map.addAttribute("status",server.getStatus());
         return "home";
@@ -96,7 +96,7 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Permission denied");
     }
     @RequestMapping("/restartServer")
-    public ResponseEntity<String> restartServer() throws Exception {
+    public ResponseEntity<String> restartServer(ModelMap map) throws Exception {
         if(server.permission(Permission.RESTART)) {
             try {
                 rmh.getRemotePrintServiceObject().restart();
@@ -109,6 +109,8 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
 
             return ResponseEntity.ok("{\"data\":\"server restarted\"}");
         }
+
+        map.addAttribute("restart", "false");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Permission denied");
     }
 

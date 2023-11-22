@@ -23,9 +23,12 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     private int printJobCount;
     String remoteObjectLocalReference;
 
+    private AccessControlService accessControlService;
+
     public  PrintService(String refCookie) throws RemoteException {
         super();
         this.remoteObjectLocalReference=refCookie;
+        accessControlService = new AccessControlService();
         log="";
         printers = new ArrayList<>();
         configurations = new HashMap<>();
@@ -39,6 +42,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     @Override
     public void start() throws Exception{
         validateSession();
+        validateAccess(Permission.START);
         String username = Session.getSession(this.remoteObjectLocalReference).username;
             log="Print server started\n";
             System.out.println(ConsoleColors.GREEN + "Print server started by user :" + username );
@@ -48,6 +52,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     @Override
     public void stop() throws Exception {
         validateSession();
+        validateAccess(Permission.STOP);
         String username = Session.getSession(this.remoteObjectLocalReference).username;
             System.out.println(ConsoleColors.RED + "Print server stopped by user :" + username);
             setAllPrinterStatus(Printer.Status.OFF);
@@ -58,9 +63,10 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     @Override
     public void restart() throws Exception {
         validateSession();
+        validateAccess(Permission.RESTART);
         String username = Session.getSession(this.remoteObjectLocalReference).username;
             log = "Print server restarted";
-            System.out.println(ConsoleColors.ORANGE + "Print server is restarting  by user :" + Session.getSession(this.remoteObjectLocalReference).username);
+            System.out.println(ConsoleColors.ORANGE + "Print server is restarting  by user :" + username);
             stop();
             setAllPrinterStatus(Printer.Status.RESTARTING);
             for (Printer printer : printers) {
@@ -73,6 +79,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     @Override
     public void print(String filename, String printer) throws Exception {
         validateSession();
+        validateAccess(Permission.PRINT);
         String username = Session.getSession(this.remoteObjectLocalReference).username;
             printJobCount++;
             Printer p = findPrinter(printer);
@@ -88,6 +95,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     @Override
     public void queue(String printer) throws Exception {
         validateSession();
+        validateAccess(Permission.QUEUE);
         String username = Session.getSession(this.remoteObjectLocalReference).username;
             Printer p = findPrinter(printer);
             if(p != null){
@@ -99,6 +107,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     @Override
     public void topQueue(String printer, int job)throws Exception {
         validateSession();
+        validateAccess(Permission.TOP_QUEUE);
         String username = Session.getSession(this.remoteObjectLocalReference).username;
             Printer p = findPrinter(printer);
             if(p != null){
@@ -110,6 +119,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     @Override
     public void status(String printer) throws Exception {
         validateSession();
+        validateAccess(Permission.STATUS);
         String username = Session.getSession(this.remoteObjectLocalReference).username;
             Printer p = findPrinter(printer);
             if(p != null){
@@ -120,6 +130,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     @Override
     public void readConfig(String parameter) throws Exception{
         validateSession();
+        validateAccess(Permission.READ_CONFIG);
         String username = Session.getSession(this.remoteObjectLocalReference).username;
             log += "Configuration for Parameter: " +parameter + ", Value: " + configurations.get(parameter)+"\n";
             System.out.println(ConsoleColors.GREEN + "Parameter: " +parameter + ", Value: " + configurations.get(parameter));
@@ -128,6 +139,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     @Override
     public void setConfig(String parameter, String value) throws Exception {
         validateSession();
+        validateAccess(Permission.SET_CONFIG);
         String username = Session.getSession(this.remoteObjectLocalReference).username;
             log += "Parameter: "+parameter+", Value: "+value+"\n";
             System.out.println("configurations for parameter"+parameter+". by user :" + username);
@@ -168,6 +180,13 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     }
     public Map<String, String> getConfigurations() {
         return configurations;
+    }
+
+    private void validateAccess(Permission permission) throws Exception {
+        List<Permission> permissions = accessControlService.getUserPermissionList();
+        if(!permissions.contains(permission)) {
+            throw new Exception("Not allowed to perform this operation");
+        }
     }
 }
 

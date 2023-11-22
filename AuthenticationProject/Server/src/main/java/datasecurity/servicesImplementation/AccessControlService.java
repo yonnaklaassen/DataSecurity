@@ -22,7 +22,6 @@ public class AccessControlService extends UnicastRemoteObject implements IAccess
     public AccessControlService() throws RemoteException {
         super();
     }
-git
     public List<Permission> loadAccessControlPermissions(String referenceCookie) {
     try {
         String currentUsername = Session.getSession(referenceCookie).username;

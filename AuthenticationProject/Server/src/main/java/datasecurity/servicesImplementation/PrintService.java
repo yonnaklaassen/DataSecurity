@@ -42,7 +42,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     @Override
     public void start() throws Exception{
         validateSession();
-        validateAccess(Permission.START);
+       // validateAccess(Permission.START);
         String username = Session.getSession(this.remoteObjectLocalReference).username;
             log="Print server started\n";
             System.out.println(ConsoleColors.GREEN + "Print server started by user :" + username );
@@ -183,8 +183,8 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     }
 
     private void validateAccess(Permission permission) throws Exception {
-        List<Permission> permissions = accessControlService.getUserPermissionList();
-        if(!permissions.contains(permission)) {
+        List<Permission> permissions = accessControlService.getUserPermissionList(this.remoteObjectLocalReference);
+        if(permissions == null || !permissions.contains(permission)) {
             throw new Exception("Not allowed to perform this operation");
         }
     }

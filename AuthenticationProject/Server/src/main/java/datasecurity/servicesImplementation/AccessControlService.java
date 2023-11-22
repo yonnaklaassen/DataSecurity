@@ -17,8 +17,6 @@ import java.util.*;
 
 public class AccessControlService extends UnicastRemoteObject implements IAccessControlService, Serializable {
 
-    private User currentUser;
-
     public AccessControlService() throws RemoteException {
         super();
     }
@@ -57,7 +55,6 @@ public class AccessControlService extends UnicastRemoteObject implements IAccess
                 for (String perm : permissionListStrings) {
                     permissionList.add(convertStringToPermission(perm));
                 }
-                currentUser = new User(currentUsername, permissionList);
                 System.out.println(ConsoleColors.GREEN + "Access control permissions for " + currentUsername + " is loaded!");
                 System.out.println(ConsoleColors.ORANGE + permissionList);
                 return permissionList;
@@ -79,7 +76,7 @@ public class AccessControlService extends UnicastRemoteObject implements IAccess
         return null;
     }
 
-    public List<Permission> getUserPermissionList() {
-        return currentUser.getPermissionList();
+    public List<Permission> getUserPermissionList(String referenceCookie) {
+        return loadAccessControlPermissions(referenceCookie);
     }
 }

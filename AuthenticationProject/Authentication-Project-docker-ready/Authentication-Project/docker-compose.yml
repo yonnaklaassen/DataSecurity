@@ -31,7 +31,6 @@ services:
     volumes:
       - ./certificate:/certificate
       - ./client.jar:/client.jar
-      - ./accessControl:/accessControl
     environment:
       - hostIp=172.29.0.6
     networks:

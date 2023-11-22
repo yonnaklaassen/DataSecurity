@@ -57,7 +57,7 @@ public HomeController(Server _server, RemoteObjectHandler _rmh, UsersConfig _use
     public  String home(ModelMap map) throws NotBoundException, RemoteException {
         if (usersConfig.getUsername()!=null){
             map.addAttribute("username",usersConfig.getUsername());
-            List<Permission> permissions = rmh.getAccessControlServiceObject().getPermissionsByUser(usersConfig.getUsername());
+            List<Permission> permissions = rmh.getAccessControlServiceObject().loadAccessControlPermissions(usersConfig.get_sessionAuthCookie());
             server.setPermissions(permissions, map);
         }
         map.addAttribute("status",server.getStatus());

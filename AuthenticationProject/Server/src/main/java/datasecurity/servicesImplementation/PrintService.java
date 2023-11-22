@@ -21,14 +21,11 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     private Map<String, String> configurations;
     private String log;
     private int printJobCount;
-
-    private AccessControlService accessControlService;
     String remoteObjectLocalReference;
 
     public  PrintService(String refCookie) throws RemoteException {
         super();
         this.remoteObjectLocalReference=refCookie;
-        accessControlService = new AccessControlService();
         log="";
         printers = new ArrayList<>();
         configurations = new HashMap<>();

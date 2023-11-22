@@ -50,7 +50,7 @@ public class RemoteObjectHandler {
     }
 
     public IAccessControlService getAccessControlServiceObject() throws NotBoundException, RemoteException {
-        accessControlService = (IAccessControlService)registry.lookup("accessControlServiceObject");
+        accessControlService = (IAccessControlService)registry.lookup("accessControlServiceObject"+userDetails.get_sessionAuthCookie());
         return accessControlService;
     }
 

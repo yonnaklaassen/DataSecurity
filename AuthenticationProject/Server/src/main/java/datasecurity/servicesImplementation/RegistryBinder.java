@@ -44,9 +44,8 @@ public class RegistryBinder {
         System.out.println("print service is stopped");
     }
 
-    public static void bindAccessControlService() throws RemoteException {
+    public static void bindAccessControlService(String referenceCookie) throws RemoteException {
         IAccessControlService accessControlServiceObject = new AccessControlService();
-        registry.rebind("accessControlServiceObject", accessControlServiceObject);
-        System.out.println("Access Control Service started");
+        registry.rebind("accessControlServiceObject"+referenceCookie, accessControlServiceObject);
     }
 }

@@ -17,16 +17,15 @@ import java.util.*;
 
 public class AccessControlService extends UnicastRemoteObject implements IAccessControlService, Serializable {
 
-    private List<User> users;
+    private User currentUser;
 
     public AccessControlService() throws RemoteException {
         super();
-        this.users = new ArrayList<>();
-        loadAccessControlList();
     }
 
-    public void loadAccessControlList() {
+    public List<Permission> loadAccessControlPermissions(String referenceCookie) {
     try {
+        String currentUsername = Session.getSession(referenceCookie).username;
         ObjectMapper objectMapper = new ObjectMapper();
 
         String filePath1 = "/accessControl/AccessControlList.json";
@@ -44,28 +43,31 @@ public class AccessControlService extends UnicastRemoteObject implements IAccess
             throw new FileNotFoundException("AccessControlList.json not found in either path: " + filePath1 + " or " + filePath2);
         }
 
-        // Load users
+        // Load user
         JsonNode usersArray = aclData.get("users");
         for (JsonNode userNode : usersArray) {
             String username = userNode.get("username").asText();
+
             List<String> permissionListStrings = new ArrayList<>();
-            for(JsonNode permissions : userNode.get("permissions")) {
-                permissionListStrings.add(permissions.asText());
-            }
+            if(username.equals(currentUsername)) {
+                for(JsonNode permissions : userNode.get("permissions")) {
+                    permissionListStrings.add(permissions.asText());
+                }
 
-            List<Permission> permissionList = new ArrayList<>();
-            for (String perm : permissionListStrings) {
-                permissionList.add(convertStringToPermission(perm));
+                List<Permission> permissionList = new ArrayList<>();
+                for (String perm : permissionListStrings) {
+                    permissionList.add(convertStringToPermission(perm));
+                }
+                System.out.println(ConsoleColors.GREEN + "Access control permissions for " + currentUsername + " is loaded!");
+                System.out.println(ConsoleColors.ORANGE + permissionList);
+                return permissionList;
             }
-
-            users.add(new User(username, permissionList));
         }
-
-        System.out.println(ConsoleColors.GREEN + "Access control list is loaded!.");
     } catch (IOException e) {
         e.printStackTrace();
         throw new RuntimeException(e);
     }
+    return new ArrayList<>();
     }
 
     private Permission convertStringToPermission(String permission) {
@@ -75,27 +77,5 @@ public class AccessControlService extends UnicastRemoteObject implements IAccess
             }
         }
         return null;
-    }
-
-    public boolean checkPermission(String username, Permission operation) {
-        User user = getUserByUsername(username);
-        if (user != null) {
-            List<Permission> userPermissions = user.getPermissionList();
-            return userPermissions.contains(operation);
-        }
-        return false; // Handle error if user not found
-    }
-
-    public List<Permission> getPermissionsByUser(String username) {
-    return Objects.requireNonNull(getUserByUsername(username)).getPermissionList();
-    }
-
-    private User getUserByUsername(String username) {
-        for (User user : users) {
-            if (user.getUsername().equals(username)) {
-                return user;
-            }
-        }
-        return null; // Handle error if user not found
     }
 }

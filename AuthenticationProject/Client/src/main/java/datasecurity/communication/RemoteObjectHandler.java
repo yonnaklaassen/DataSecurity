@@ -1,10 +1,14 @@
 package datasecurity.communication;
 
-import datasecurity.ClientApplication;
+import datasecurity.ClientSecurity.ServerAuthentication;
 import datasecurity.ClientSecurity.UsersConfig;
+import datasecurity.Enum.Role;
+import datasecurity.services.IAccessControlService;
 import datasecurity.services.IAuthenticationService;
 import datasecurity.services.IPrintService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 
@@ -16,8 +20,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMIClientSocketFactory;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 
 @Component
@@ -25,11 +30,12 @@ public class RemoteObjectHandler {
     Registry registry;
     IAuthenticationService authenticationService;
     IPrintService printService ;
+    IAccessControlService accessControlService;
 
     @Autowired
     UsersConfig userDetails;
 
-    public RemoteObjectHandler( ) throws IOException, NotBoundException {
+    public RemoteObjectHandler( ) throws IOException, NotBoundException, RemoteException {
 
         System.setProperty("javax.net.ssl.trustStore", "certificate/RMI_ClientTrustStore.pfx");
         System.setProperty("javax.net.ssl.trustStorePassword", "group10");
@@ -51,6 +57,29 @@ public class RemoteObjectHandler {
 
     }
 
+    public IAccessControlService getAccessControlServiceObject() throws NotBoundException, RemoteException {
+        accessControlService = (IAccessControlService)registry.lookup("accessControlServiceObject"+userDetails.get_sessionAuthCookie());
+        return accessControlService;
+    }
 
+    public Collection<? extends GrantedAuthority> getAuthorities() throws Exception {
+        ArrayList<Role> accessList;
+        try {
 
+            accessList = getAccessControlServiceObject().getUserRoles(ServerAuthentication.encrypt(userDetails.get_sessionAuthCookie(),"MySecretKey123456789012345678901"));
+            userDetails.userRole= Role.fromString(accessList.get(0).toString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
+        for (Role role : accessList) {
+            authorities.add(new SimpleGrantedAuthority(role.toString()));
+        }
+        return authorities;
+    }
 }
+
+
+

@@ -3,6 +3,7 @@ package datasecurity.ClientSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import datasecurity.Enum.Role;
 
 import java.util.Collection;
 
@@ -11,6 +12,8 @@ public class UsersConfig implements UserDetails {
 
     String _username;
     String cookie;
+
+    public Role userRole;
     public boolean _isActiveSession;
 
 
@@ -26,6 +29,9 @@ public class UsersConfig implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }
+
+
+
 
     @Override
     public String getPassword() {

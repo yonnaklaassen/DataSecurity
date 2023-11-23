@@ -1,0 +1,51 @@
+services:
+  mysql-server:
+    hostname: MYSQL
+    build: ./database/.
+    networks:
+       host:
+         ipv4_address: 172.29.0.3
+    ports:
+        - "3306:3306"
+  
+  rmi-server:
+    image: openjdk:16
+    volumes:
+      - ./certificate:/certificate
+      - ./server.jar:/server.jar
+      - ./AccessControlList.json:/AccessControlList.json
+    depends_on:
+      - mysql-server 
+    environment:
+      - dbhostIp=172.29.0.3
+    ports:
+      - 80:80
+    networks:
+       host:
+         ipv4_address: 172.29.0.6
+    command: > 
+        sh -c "java -jar /server.jar" 
+    
+  rmi-client:
+    image: openjdk:16
+    volumes:
+      - ./certificate:/certificate
+      - ./client.jar:/client.jar
+    environment:
+      - hostIp=172.29.0.6
+    networks:
+       host:
+          ipv4_address: 172.29.0.9
+    ports:
+      - 8443:8443
+    depends_on:
+      - rmi-server 
+    command: > 
+        sh -c "java -jar /client.jar" 
+
+networks:
+  host:
+    ipam:
+      config:
+        - subnet: 172.29.0.0/16
+          gateway: 172.29.0.1

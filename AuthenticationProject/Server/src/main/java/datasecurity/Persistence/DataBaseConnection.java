@@ -8,8 +8,8 @@ public class DataBaseConnection {
 
     public DataBaseConnection() throws SQLException {
 
-    }
 
+    }
 
 
 
@@ -18,9 +18,7 @@ public class DataBaseConnection {
         String salt="";
 
         try {
-            //locally path
-            String pathToTrustStore=
-            // in docker
+
             System.setProperty("javax.net.ssl.trustStore", "certificate/dbTrustStore.pfx");
             System.setProperty("javax.net.ssl.trustStorePassword", "group10");
             String dbhost = System.getenv("dbhostIp");
@@ -32,7 +30,7 @@ public class DataBaseConnection {
             ps.setString(1, username);
 
             ResultSet resset = ps.executeQuery();
-          //  System.out.println("Certificate Name: " + connection.getClientInfo());
+            //  System.out.println("Certificate Name: " + connection.getClientInfo());
 
 
             while(resset.next()){

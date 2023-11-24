@@ -1,0 +1,32 @@
+{
+  "users": [
+    {
+      "username": "alice23",
+      "permissions": ["start", "stop", "restart", "status", "read_Config", "set_Config", "print", "queue", "top_Queue"]
+    },
+    {
+      "username": "bob23",
+      "permissions": ["start", "stop", "restart", "status", "read_Config", "set_Config"]
+    },
+    {
+      "username": "cecilia23",
+      "permissions": ["print", "queue", "top_Queue", "restart"]
+    },
+    {
+      "username": "david23",
+      "permissions": ["print", "queue"]
+    },
+    {
+      "username": "erica23",
+      "permissions": ["print", "queue"]
+    },
+    {
+      "username": "fred23",
+      "permissions": ["print", "queue"]
+    },
+    {
+      "username": "george23",
+      "permissions": ["print", "queue"]
+    }
+  ]
+}

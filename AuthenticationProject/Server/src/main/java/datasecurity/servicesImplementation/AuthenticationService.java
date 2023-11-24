@@ -6,6 +6,8 @@ import datasecurity.services.IAuthenticationService;
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
 import org.bouncycastle.crypto.params.Argon2Parameters;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.rmi.NotBoundException;
@@ -24,7 +26,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
     }
 
     @Override
-    public String authenticate(String username, String password) throws RemoteException, SQLException, NoSuchAlgorithmException, NotBoundException {
+    public String authenticate(String username, String password) throws Exception {
 
         //use secure KDF-based password hash - argon2id hybrid between 2d and ai
         //{salt+KDF(password,salt)} - Keep different random salt for each encrypted password+the key derived by KDF
@@ -49,18 +51,15 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         String hashedPassword = HashedPasswordAndSalt[1];
         String salt = HashedPasswordAndSalt[0];
         System.out.println("Start authenticating User:"+" "+username);
-        //System.out.println("hashedPassword"+hashedPassword);
-        //System.out.println("hashedPasswordSalt"+salt);
-        //System.out.println("generatedHash"+generateHash(password, salt));
-
-        if(generateHash(password, salt).matches(hashedPassword)){
+        if(generateHash(password, salt).equals(hashedPassword)){
             //user authenticated
             SecureRandom secureRandom =SecureRandom.getInstance("SHA1PRNG");
-            String cookie= String.valueOf(secureRandom.nextInt());
-            String encryptedCookie= generateHash(cookie,salt);
-            Session session= new Session(username,encryptedCookie);
-            RegistryBinder.bindPrintService(encryptedCookie);
-            RegistryBinder.bindAccessControlService(encryptedCookie);
+            String secRandom= String.valueOf(secureRandom.nextInt());
+            String cookie= generateHash(secRandom,salt);
+            String encryptedCookie = encrypt(cookie,"MySecretKey123456789012345678901");
+            Session session= new Session(username,cookie);
+            RegistryBinder.bindPrintService(cookie);
+            RegistryBinder.bindAccessControlService(cookie);
             return encryptedCookie;
         }
 
@@ -93,5 +92,14 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         return Base64.getEncoder().encodeToString(result);
     }
 
+    public static String encrypt(String valueToEncrypt, String secretKey) throws Exception {
+        byte[] encryptedBytes;
 
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+
+        encryptedBytes = cipher.doFinal(valueToEncrypt.getBytes());
+        return Base64.getEncoder().encodeToString(encryptedBytes);
+    }
 }

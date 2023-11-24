@@ -1,6 +1,6 @@
 package datasecurity.models;
 
-import model.Permission;
+import datasecurity.model.Permission;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
 

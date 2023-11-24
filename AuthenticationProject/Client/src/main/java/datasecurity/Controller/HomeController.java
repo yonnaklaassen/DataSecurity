@@ -4,7 +4,7 @@ package datasecurity.Controller;
 import datasecurity.ClientSecurity.UsersConfig;
 import datasecurity.communication.RemoteObjectHandler;
 
-import model.Permission;
+import datasecurity.model.Permission;
 import datasecurity.models.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,8 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.*;
-import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.List;

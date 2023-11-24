@@ -29,7 +29,7 @@ UsersConfig usersConfig;
         usersConfig.seUsername("");
         usersConfig.set_sessionAuthCookie("");
         usersConfig._isActiveSession=false;
-        server.setStatus("stop");
+        //server.setStatus("stop");
         System.out.println("\u001B[31m"+"Session is destroyed"+"\u001B[37m");
         SecurityContextHolder.clearContext();
 

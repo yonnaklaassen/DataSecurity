@@ -4,7 +4,8 @@ package datasecurity.servicesImplementation;
 
 
 import datasecurity.Shared.ConsoleColors;
-import model.Permission;
+import datasecurity.exeptions.UnauthorizedException;
+import datasecurity.model.Permission;
 import datasecurity.model.PrintJob;
 import datasecurity.model.Printer;
 import datasecurity.services.IPrintService;
@@ -185,7 +186,7 @@ public class PrintService extends UnicastRemoteObject  implements IPrintService 
     private void validateAccess(Permission permission) throws Exception {
         List<Permission> permissions = accessControlService.getUserPermissionList(this.remoteObjectLocalReference);
         if(permissions == null || !permissions.contains(permission)) {
-            throw new Exception("Not allowed to perform this operation");
+            throw new UnauthorizedException("Not allowed to perform this operation");
         }
     }
 }

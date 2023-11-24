@@ -9,6 +9,6 @@ import java.sql.SQLException;
 
 public interface IAuthenticationService extends Serializable, Remote {
 
-    String authenticate(String username, String password) throws RemoteException, SQLException, NoSuchAlgorithmException, NotBoundException;
+    String authenticate(String username, String password) throws Exception;
 
 }

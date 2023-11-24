@@ -13,4 +13,7 @@ INSERT INTO User(username, hashedPassword, salt) values('david23','bAE/LBs+XxLyW
 INSERT INTO User(username, hashedPassword, salt) values('erica23','IomW9HaYgsOZPO9tL7p3Qo4QbqnNH44KtzQ7MFuI5fQ=','bhbhubuRRR/&%REF--');
 INSERT INTO User(username, hashedPassword, salt) values('fred23','t1b2FXFFOGrhFNIDgBEsgkjA+As4nNnXM/o7VEjfvCM=','JNIvbgyGHV88_i##mko');
 INSERT INTO User(username, hashedPassword, salt) values('george23','7YMkx84ti9swNvuzK3Q8BNYy9rreBzNH5w18zSK0/io=','HTUnsb(rjbd--frrt');
+INSERT INTO User(username, hashedPassword, salt) values('ida23','9BRtPzmRpFd41F9Tlt6XG+XIdz0xVh8UCM31/Ax5QYM=','3Q8BNYy9rreBzNH5');
+INSERT INTO User(username, hashedPassword, salt) values('henry23','1dsYWFrJDGaOs/H4f4RQCOIBIj5KWaNsaKzZzOCNu4s=','8wC7IaEosuiP+/8=');
+
 

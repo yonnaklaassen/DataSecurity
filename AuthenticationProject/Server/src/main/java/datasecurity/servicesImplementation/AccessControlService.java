@@ -3,8 +3,7 @@ package datasecurity.servicesImplementation;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import datasecurity.Shared.ConsoleColors;
-import model.Permission;
-import datasecurity.model.User;
+import datasecurity.model.Permission;
 import datasecurity.services.IAccessControlService;
 
 import java.io.File;
@@ -27,15 +26,19 @@ public class AccessControlService extends UnicastRemoteObject implements IAccess
 
         String filePath1 = "/accessControl/AccessControlList.json";
         String filePath2 = "Authentication-Project-docker-ready/Authentication-Project/accessControl/AccessControlList.json";
+        String filePath3 = "accessControlForTest/AccessControlListForTest.json";
 
         File file1 = new File(filePath1);
         File file2 = new File(filePath2);
+        File file3 = new File(filePath3);
 
         JsonNode aclData;
         if (file1.exists()) {
             aclData = objectMapper.readTree(file1);
         } else if (file2.exists()) {
             aclData = objectMapper.readTree(file2);
+        }else if (file3.exists()) {
+            aclData = objectMapper.readTree(file3);
         } else {
             throw new FileNotFoundException("AccessControlList.json not found in either path: " + filePath1 + " or " + filePath2);
         }

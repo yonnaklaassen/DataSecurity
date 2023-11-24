@@ -1,6 +1,6 @@
 package datasecurity.services;
 
-import model.Permission;
+import datasecurity.model.Permission;
 
 import java.io.Serializable;
 import java.rmi.Remote;
